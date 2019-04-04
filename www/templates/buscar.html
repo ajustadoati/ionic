@@ -1,0 +1,48 @@
+<ion-view>
+    <ion-content overflow-scroll="true" padding="true" scroll="true" class="has-header">
+        
+        <form class="list" name="newSearchForm">
+
+            <div style="line-height: 180px; border: 0px solid rgb(238, 238, 238); border-radius: 3px; text-align: center; width: 100%; height: auto; background-color: rgb(255, 255, 255);">
+                 <div class="spacer" style="height: 40px;"></div>
+                 <a href="#/login" >
+                  <img src="img/logo_ajustado.png" width="330" height="70"></img>
+                 </a>
+                
+                
+            </div>
+            
+            <ion-list>
+                <label class="item item-input">
+                    <span class="input-label">Producto</span>
+                    <input type="text" ng-model="consulta.producto.nombre" placeholder="">
+                </label>
+                
+            </ion-list>
+            <multiselect
+              header-text="Header"
+              items="data"
+              text-property="nombre"
+              value-property="nombre"
+              is-translate="false"
+              multi-select="false"
+              index-translate="TAG_TRANSLATE"
+              text="Categor&iacute;as"
+              modal-template-url="lib/ionic-multiselect/dist/templates/modal-template.html"
+              template-url="lib/ionic-multiselect/dist/templates/item-template.html"
+              note-text="Seleccione una"
+              value-changed="onValueChanged(value)">
+            </multiselect>
+
+           
+                        
+            <input type="submit"
+                       class="button button-stable button-block"
+                       ng-click="buscar(newSearchForm);"
+                       value='Buscar'/>
+            <a href="#/login" class="button button-positive button-clear button-block  icon-left ">Login</a>
+            
+            
+        </form>
+    </ion-content>
+</ion-view>

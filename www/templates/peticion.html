@@ -1,0 +1,19 @@
+<ion-view title="Solicitudes">
+    <ion-content overflow-scroll="true" padding="true" class="has-header">
+      
+      <ion-list style="">
+     <ion-item class="item-remove-animate item-avatar item-icon-right" ng-repeat="peticion in peticiones" type="item-text-wrap" ng-click="peticionDetalle(peticion.code)">
+      
+      <img ng-src="img/ben.png">
+      <h2>{{peticion.user}}</h2>
+      <p>{{peticion.code}}: {{peticion.text}}</p>
+      <i class="icon ion-chevron-right icon-accessory"></i>
+
+      <ion-option-button class="button-assertive" ng-click="removePeticion(peticion)">
+        Delete
+      </ion-option-button>
+      
+      </ion-item>
+    </ion-list>
+    </ion-content>
+</ion-view>

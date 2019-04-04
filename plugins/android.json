@@ -1,0 +1,30 @@
+{
+    "prepare_queue": {
+        "installed": [],
+        "uninstalled": []
+    },
+    "config_munge": {
+        "files": {}
+    },
+    "installed_plugins": {
+        "cordova-plugin-geolocation": {
+            "PACKAGE_NAME": "com.richardroj.ajustadoatimovil"
+        },
+        "cordova-plugin-websocket": {
+            "PACKAGE_NAME": "com.richardroj.ajustadoatimovil"
+        },
+        "cordova-plugin-whitelist": {
+            "PACKAGE_NAME": "com.richardroj.ajustadoatimovil"
+        },
+        "ionic-plugin-keyboard": {
+            "PACKAGE_NAME": "com.richardroj.ajustadoatimovil"
+        },
+        "onesignal-cordova-plugin": {
+            "PACKAGE_NAME": "com.richardroj.ajustadoatimovil"
+        },
+        "cordova-plugin-device": {
+            "PACKAGE_NAME": "com.richardroj.ajustadoatimovil"
+        }
+    },
+    "dependent_plugins": {}
+}
