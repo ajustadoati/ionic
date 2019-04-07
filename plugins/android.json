@@ -1,30 +1,40 @@
 {
-    "prepare_queue": {
-        "installed": [],
-        "uninstalled": []
+  "prepare_queue": {
+    "installed": [],
+    "uninstalled": []
+  },
+  "config_munge": {
+    "files": {}
+  },
+  "installed_plugins": {
+    "cordova-plugin-device": {
+      "PACKAGE_NAME": "io.ionic.starter"
     },
-    "config_munge": {
-        "files": {}
+    "cordova-plugin-geolocation": {
+      "PACKAGE_NAME": "io.ionic.starter"
     },
-    "installed_plugins": {
-        "cordova-plugin-geolocation": {
-            "PACKAGE_NAME": "com.richardroj.ajustadoatimovil"
-        },
-        "cordova-plugin-websocket": {
-            "PACKAGE_NAME": "com.richardroj.ajustadoatimovil"
-        },
-        "cordova-plugin-whitelist": {
-            "PACKAGE_NAME": "com.richardroj.ajustadoatimovil"
-        },
-        "ionic-plugin-keyboard": {
-            "PACKAGE_NAME": "com.richardroj.ajustadoatimovil"
-        },
-        "onesignal-cordova-plugin": {
-            "PACKAGE_NAME": "com.richardroj.ajustadoatimovil"
-        },
-        "cordova-plugin-device": {
-            "PACKAGE_NAME": "com.richardroj.ajustadoatimovil"
-        }
+    "cordova-plugin-websocket": {
+      "PACKAGE_NAME": "io.ionic.starter"
     },
-    "dependent_plugins": {}
+    "cordova-plugin-whitelist": {
+      "PACKAGE_NAME": "io.ionic.starter"
+    },
+    "ionic-plugin-keyboard": {
+      "PACKAGE_NAME": "io.ionic.starter"
+    },
+    "onesignal-cordova-plugin": {
+      "PACKAGE_NAME": "io.ionic.starter"
+    },
+    "cordova-plugin-statusbar": {
+      "PACKAGE_NAME": "io.ionic.starter"
+    },
+    "cordova-plugin-splashscreen": {
+      "PACKAGE_NAME": "io.ionic.starter"
+    },
+    "cordova-plugin-ionic-webview": {
+      "ANDROID_SUPPORT_ANNOTATIONS_VERSION": "27.+",
+      "PACKAGE_NAME": "io.ionic.starter"
+    }
+  },
+  "dependent_plugins": {}
 }
