@@ -13,9 +13,6 @@
                 
             </div>
 
-
-            
-
             <div align="center" style="line-height: 0px; border: 0px solid rgb(238, 238, 238); border-radius: 3px; text-align: center; width: 100%; height: auto; background-color: rgb(255, 255, 255);">
                 <div class="spacer" style="height: 50px;"></div>
                   <div style="background: url('img/input_search.png'); background-size: 250px 50px; margin: 0 auto; text-align: center; width: 250px; height: 50px;">
@@ -28,7 +25,10 @@
                   <div style="background: url('img/input_category.png'); background-size: 250px 50px; margin: 0 auto; text-align: center; width: 250px; height: 50px;">
                     <label class="item_login item-input">
                     
-                        <input type="password" size="30" ng-model="usuarioLogin.password"  placeholder="Category">
+                        <select ng-model="categoria_selected" ng-change="selectUpdated(categoria_selected)">
+                           <option value="2">Select Category</option>
+                           <option ng-repeat="categoria in categorias" value="{{categoria.id}}" >{{categoria.nombre}}</option>
+                         </select>
                     </label>
                   </div>
                 
@@ -40,13 +40,7 @@
             </div>
             </div>
             
-            <ion-list>
-                <label class="item item-input">
-                    <span class="input-label">Producto</span>
-                    <input type="text" ng-model="consulta.producto.nombre" placeholder="">
-                </label>
-                
-            </ion-list>
+            
             <multiselect
               header-text="Header"
               items="data"
