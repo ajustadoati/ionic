@@ -1,8 +1,8 @@
 <ion-view>
-    <ion-content overflow-scroll="true" padding="true" scroll="true" class="has-header">
+    <ion-content overflow-scroll="true" padding="true" scroll="true" class="">
          <div style="line-height: 0px; border: 0px solid rgb(238, 238, 238); border-radius: 0px; text-align: right; width: 100%; height: auto; background-color: rgb(255, 255, 255);">
                  
-                <img src="img/header_left.png" width="100" height="100"></img>
+                <img src="img/header_logo.png" width="200" height="200"></img>
                 
         </div>
         
@@ -25,8 +25,8 @@
                   <div style="background: url('img/input_category.png'); background-size: 250px 50px; margin: 0 auto; text-align: center; width: 250px; height: 50px;">
                     <label class="item_login item-input">
                     
-                        <select ng-model="categoria_selected" ng-change="selectUpdated(categoria_selected)">
-                           <option value="2">Select Category</option>
+                        <select ng-model="categoria_selected" ng-change="selectUpdated(categoria_selected)" style="background-color: rgb(255, 255, 255); border: 0px dashed rgb(166, 166, 166); color:rgb(166, 166, 166);">
+                           <option value="">Select Category</option>
                            <option ng-repeat="categoria in categorias" value="{{categoria.id}}" >{{categoria.nombre}}</option>
                          </select>
                     </label>
@@ -35,9 +35,29 @@
                    <div align="left" style="line-height: 0px; border: 0px solid rgb(238, 238, 238); border-radius: 3px; text-align: center; width: 100%; height: auto; background-color: rgb(255, 255, 255);">
                 
                  <div class="spacer" style="height: 40px;"></div>
-                <img src="img/button_signin.png" width="150" height="50" ng-click="loginUsuario(loginForm);"></img>
+                <img src="img/botton-search.png" width="150" height="50" ng-click="loginUsuario(loginForm);"></img>
                 
-            </div>
+                </div>
+
+              <div align="center" style="line-height: 0px; border: 0px solid rgb(238, 238, 238); border-radius: 3px; text-align:center; width: 100%; height:auto; background-color: rgb(255, 255, 255);">
+                  <div class="spacer" style="height: 62px;"></div>
+                  <div class = "row">
+
+                    <div class = "col-50" ><a href="#/login"><img src="img/button_signin.png" width="150" height="50" ng-click="loginUsuario(loginForm);"></img></img></a></div>
+                    
+
+                    <div class = "col-50" style="text-align: center;">
+                        <a href="#/userRegister"><img src="img/botton_signup.png" width="150" height="50" ng-click="loginUsuario(loginForm);"></img></img></a>
+                    </div>
+
+                </div>
+              </div>
+
+              <div class="spacer" style="height: 40px;"></div>
+                <img src="img/line.png" width="150" height="10" ng-click="loginUsuario(loginForm);"></img>
+                
+                </div>
+
             </div>
             
             
