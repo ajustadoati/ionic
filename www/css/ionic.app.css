@@ -6265,7 +6265,7 @@ input[type="color"] {
   height: 20px;
   color: #111;
   vertical-align: middle;
-  font-size: 20px;
+  font-size: 15px;
   text-align: left;
   line-height: 16px; }
 
@@ -9268,7 +9268,7 @@ $ios-transition-box-shadow-end: -200px 0px 200px rgba(0,0,0,0.15), -5px 0px 5px 
   background: #f8f8f8; }
 
 .scroll {
-  padding: 0px 0 50px; }
+  padding: 0px 0 0px; }
 
 .messages {
   display: -webkit-box;

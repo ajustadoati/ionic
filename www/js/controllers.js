@@ -353,6 +353,43 @@ angular.module('app.controllers', [])
    
 .controller('buscarCtrl', function($scope, categoriaService, consultaService, $cordovaGeolocation, MapService, sharedConn, $stateParams, ChatDetails, $ionicPopup, proveedorService, usuarioService) {
   console.log("BuscarCtrl");
+  $scope.categorias=[];
+  $scope.categoriaSelected={};
+  $scope.stations=[{"station_num":1, "station_name":"test1"},{"station_num":2, "station_name":"test2"}];
+ 
+  $scope.selectUpdated = function(selected) {
+      console.log('Updated'+selected);
+      $scope.categoriaSelected=$scope.categorias[selected];
+      console.log($scope.categoriaSelected.nombre);
+  };
+
+  getCategorias();
+
+   function getCategorias() {
+    console.log("Ctrl. getting categorias")
+        categoriaService.getCategorias()
+            .success(function (categorias) {
+                for(var i=0; i<categorias.length;i++){
+                    var categoria=[];
+                    
+                    categoria.selected=false;
+                    categoria.id=i;
+                    categoria.nombre=categorias[i].nombre;
+                    categoria.descripcion=categorias[i].descripcion;
+                    $scope.categorias.push(categoria);
+                
+               }
+                $scope.data = categorias;
+            })
+            .error(function (error) {
+                $scope.status = 'Unable to load customer data: ' + error.message;
+            });
+    }
+
+    $scope.buscar = function (newSearchForm) {
+      console.log("realizando busqueda"+$scope.categoria_selected.id);       
+    }
+  
 })
 .controller('busquedaCtrl', function($scope, categoriaService, consultaService, $cordovaGeolocation, MapService, sharedConn, $stateParams, ChatDetails, $ionicPopup, proveedorService, usuarioService) {
   console.log("busquedaCtrl")
