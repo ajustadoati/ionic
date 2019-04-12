@@ -2,13 +2,13 @@
     <ion-content overflow-scroll="true" padding="true" scroll="true" class="">
          <div style="line-height: 0px; border: 0px solid rgb(238, 238, 238); border-radius: 0px; text-align: right; width: 100%; height: auto; background-color: rgb(255, 255, 255);">
                  
-                <img src="img/header_logo.png" width="200" height="200"></img>
+                <img src="img/header_logo.png" width="110" height="110"></img>
                 
         </div>
         
         <form class="list" name="newSearchForm">
             <div style="line-height: 0px; border: 0px solid rgb(238, 238, 238); border-radius: 3px; text-align: center; width: 100%; height: auto; background-color: rgb(255, 255, 255);">
-                 <div class="spacer" style="height: 100px;"></div>
+                 <div class="spacer" style="height: 50px;"></div>
                 <img src="img/logo_ajustado.png" width="250" height="50"></img>
                 
             </div>
@@ -53,36 +53,16 @@
                 </div>
               </div>
 
-              <div class="spacer" style="height: 40px;"></div>
+              <div class="spacer" style="height: 20px;"></div>
                 <img src="img/line.png" width="150" height="10" ng-click="loginUsuario(loginForm);"></img>
+                <div class="spacer" style="height: 10px;"></div>
                 
                 </div>
 
             </div>
             
             
-            <multiselect
-              header-text="Header"
-              items="data"
-              text-property="nombre"
-              value-property="nombre"
-              is-translate="false"
-              multi-select="false"
-              index-translate="TAG_TRANSLATE"
-              text="Categor&iacute;as"
-              modal-template-url="lib/ionic-multiselect/dist/templates/modal-template.html"
-              template-url="lib/ionic-multiselect/dist/templates/item-template.html"
-              note-text="Seleccione una"
-              value-changed="onValueChanged(value)">
-            </multiselect>
-
-           
-                        
-            <input type="submit"
-                       class="button button-stable button-block"
-                       ng-click="buscar(newSearchForm);"
-                       value='Buscar'/>
-            <a href="#/login" class="button button-positive button-clear button-block  icon-left ">Login</a>
+            
             
             
         </form>
