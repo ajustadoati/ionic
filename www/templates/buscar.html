@@ -18,7 +18,7 @@
                   <div style="background: url('img/input_search.png'); background-size: 250px 50px; margin: 0 auto; text-align: center; width: 250px; height: 50px;">
                     <label class="item_login item-input">
                     
-                        <input type="text" size="30" ng-model="consulta.producto.nombre"  placeholder="Product">
+                        <input type="text" size="30" ng-model="consulta.producto.nombre"  placeholder="Producto">
                     </label>
                   </div>
                  <div class="spacer" style="height: 15px;"></div>
@@ -26,7 +26,7 @@
                     <label class="item_login item-input">
                     
                         <select ng-model="categoria_selected" ng-change="selectUpdated(categoria_selected)" style="background-color: rgb(255, 255, 255); border: 0px dashed rgb(166, 166, 166); color:rgb(166, 166, 166);">
-                           <option value="">Select Category</option>
+                           <option value="">Seleccione Categor&iacute;a</option>
                            <option ng-repeat="categoria in categorias" value="{{categoria.id}}" >{{categoria.nombre}}</option>
                          </select>
                     </label>
@@ -35,7 +35,7 @@
                    <div align="left" style="line-height: 0px; border: 0px solid rgb(238, 238, 238); border-radius: 3px; text-align: center; width: 100%; height: auto; background-color: rgb(255, 255, 255);">
                 
                  <div class="spacer" style="height: 40px;"></div>
-                <img src="img/botton-search.png" width="150" height="50" ng-click="loginUsuario(loginForm);"></img>
+                <img src="img/button_buscar_es.png" width="150" height="50" ng-click="loginUsuario(loginForm);"></img>
                 
                 </div>
 
@@ -43,11 +43,11 @@
                   <div class="spacer" style="height: 62px;"></div>
                   <div class = "row">
 
-                    <div class = "col-50" ><a href="#/login"><img src="img/button_signin.png" width="150" height="50" ng-click="loginUsuario(loginForm);"></img></img></a></div>
+                    <div class = "col-50" ><a href="#/login"><img src="img/button_entrar_es.png" width="150" height="50" ng-click="loginUsuario(loginForm);"></img></img></a></div>
                     
 
                     <div class = "col-50" style="text-align: center;">
-                        <a href="#/userRegister"><img src="img/botton_signup.png" width="150" height="50" ng-click="loginUsuario(loginForm);"></img></img></a>
+                        <a href="#/userRegister"><img src="img/button_cuenta_es.png" width="150" height="50" ng-click="loginUsuario(loginForm);"></img></img></a>
                     </div>
 
                 </div>
