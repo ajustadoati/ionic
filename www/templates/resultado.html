@@ -1,0 +1,29 @@
+<ion-view title="Búsqueda">
+    <ion-content overflow-scroll="true" padding="true" scroll="true">
+        <div id="map" data-tap-disabled="true"></div>
+        <form class="list" name="newSearchForm">           
+            <ion-list>
+                <label class="item item-input">
+                    <span class="input-label">Producto</span>
+                    <input type="text" ng-model="consulta.producto.nombre" placeholder="">
+                </label>
+            </ion-list>
+            <div style="background: url('img/background_footer_search.png'); background-size: 100% 300px; margin: 0 auto; text-align: center; width: 100%; height: 300px;">
+                <multiselect
+                  header-text="Header"
+                  items="data"
+                  text-property="nombre"
+                  value-property="nombre"
+                  is-translate="false"
+                  multi-select="false"
+                  index-translate="TAG_TRANSLATE"
+                  text="Categor&iacute;as"
+                  modal-template-url="lib/ionic-multiselect/dist/templates/modal-template.html"
+                  template-url="lib/ionic-multiselect/dist/templates/item-template.html"
+                  note-text="Seleccione una"
+                  value-changed="onValueChanged(value)">
+                </multiselect>
+            </div>           
+        </form>
+    </ion-content>
+</ion-view>

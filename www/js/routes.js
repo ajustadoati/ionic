@@ -45,7 +45,14 @@ angular.module('app.routes', [])
       controller: 'buscarCtrl'
     })
 
-    
+     .state('resultado', {
+      url: '/resultado',
+      params:{
+            consulta:null
+      },
+      templateUrl: 'templates/resultado.html',
+      controller: 'resultadoCtrl'
+    })
 
     .state('resultadoBusqueda', {
       url: '/searchResult',

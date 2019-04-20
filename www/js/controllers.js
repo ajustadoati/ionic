@@ -351,46 +351,290 @@ angular.module('app.controllers', [])
 
 })
    
-.controller('buscarCtrl', function($scope, categoriaService, consultaService, $cordovaGeolocation, MapService, sharedConn, $stateParams, ChatDetails, $ionicPopup, proveedorService, usuarioService) {
+.controller('buscarCtrl', function($scope, $state, usuarioService, $ionicPopup, $rootScope, Peticiones, categoriaService  ) {
   console.log("BuscarCtrl");
   $scope.categorias=[];
   $scope.categoriaSelected={};
   $scope.stations=[{"station_num":1, "station_name":"test1"},{"station_num":2, "station_name":"test2"}];
+  $scope.consulta={};
+  $scope.consulta.producto={};
+  $scope.consulta.usuario={};
+  $scope.consulta.categoria={};
  
   $scope.selectUpdated = function(selected) {
       console.log('Updated'+selected);
       $scope.categoriaSelected=$scope.categorias[selected];
       console.log($scope.categoriaSelected.nombre);
+      $scope.consulta.categoria=$scope.categoriaSelected;
   };
 
   getCategorias();
 
    function getCategorias() {
-    console.log("Ctrl. getting categorias")
-        categoriaService.getCategorias()
-            .success(function (categorias) {
-                for(var i=0; i<categorias.length;i++){
-                    var categoria=[];
-                    
-                    categoria.selected=false;
-                    categoria.id=i;
-                    categoria.nombre=categorias[i].nombre;
-                    categoria.descripcion=categorias[i].descripcion;
-                    $scope.categorias.push(categoria);
-                
-               }
-                $scope.data = categorias;
-            })
-            .error(function (error) {
-                $scope.status = 'Unable to load customer data: ' + error.message;
-            });
+      console.log("Ctrl. getting categorias")
+      categoriaService.getCategorias()
+          .success(function (categorias) {
+          for(var i=0; i<categorias.length;i++){
+              var categoria=[];                    
+              categoria.id=i;
+              categoria.nombre=categorias[i].nombre;
+              categoria.descripcion=categorias[i].descripcion;
+              $scope.categorias.push(categoria);                
+         }                
+      })
+      .error(function (error) {
+          $scope.status = 'Unable to load customer data: ' + error.message;
+      });
     }
 
+
     $scope.buscar = function (newSearchForm) {
-      console.log("realizando busqueda"+$scope.categoria_selected.id);       
+      console.log("realizando busqueda"); 
+      var consulta=$scope.consulta;
+      console.log("rprod"+consulta); 
+      $state.go('resultado', {consulta});
     }
   
 })
+.controller('resultadoCtrl', function($scope, $state, $stateParams, sharedConn, usuarioService, consultaService, proveedorService, MapService, ChatDetails){
+    console.log('resultadoCtrl');
+    $scope.consulta={};
+    $scope.consulta.categoria={};
+    $scope.consulta.producto=$stateParams.consulta.producto;
+    $scope.consulta.usuario={};
+    $scope.consulta.categoria=$stateParams.consulta.categoria;
+    $scope.map={};
+    $scope.markers=[];
+    $scope.proveedores=[];
+
+    var ws = new WebSocket('wss://ajustadoati.com:8443/ajustadoatiWS/openfire');
+    
+    ws.onopen = function () {
+        console.log('open');
+        
+        //this.send('hello');         // transmit "hello" after connecting
+    };
+    ws.onmessage = function (event) {
+        console.log("receiving"+event.data);
+        var obj = JSON.parse(event.data);
+        console.log("receiving from: "+obj.user);
+        console.log("message: "+obj.message);
+        //var user=$scope.getUser(obj.user);        
+        //console.log("obteniendo usuario: "+user.nombre);
+        //$scope.addLocation(obj.latitud, obj.longitud); // will be "hello"
+        $scope.setMensajeProveedor(obj, obj.message);
+        //this.close();
+    };
+    ws.onerror = function () {
+        console.log('error occurred!');
+    };
+    ws.onclose = function (event) {
+        console.log('close code=' + event.code);
+    };
+    //se debe borrar el elemento cuando lo consigue
+     //metodo que agrega el mensaje en el objeto proveedor cuando responde
+    $scope.setMensajeProveedor=function(usuario, mensaje){
+        var resultado = [];
+        console.log("size markers: "+$scope.markers.length);
+        for (var i=0;i<$scope.markers.length;i++) {
+          console.debug("agregando mensaje a proveedor: "+usuario.user);
+          console.log("proveedor: "+$scope.markers[i].usuario);
+          if (usuario.user == $scope.markers[i].usuario) {
+              console.log("proveedor encontrado: "+$scope.markers[i].usuario);
+              resultado = $scope.markers[i];
+              resultado.mensaje=mensaje;
+              //almacena su id para borrar;
+              console.log("proveedor con mensaje nuevo: "+resultado.mensaje);
+              $scope.markers[i].mensaje=mensaje;
+              $scope.markers[i].setMap(null);
+              $scope.addLocationResponder(usuario.latitud, usuario.longitud, resultado);
+              return;
+
+          }
+        }        
+        return resultado;
+    }
+
+    //pasar datos del usuario que busca, si es anonimo o usuario registrado
+    if(sharedConn.getConnectObj()!=null){
+      $scope.userActual=sharedConn.getConnectObj().jid.split("@")[0];
+      console.log("consultando usuario: "+$scope.userActual);
+      usuarioService.getUserByUser($scope.userActual)
+                        .success(function (data) {
+          console.log("nombre:"+data.nombre);
+          $scope.consulta.usuario = data;
+      }).error(function(error) {
+          $scope.status = 'Unable to get user: ' + error.message;
+      }); 
+    }else{
+      var x = new Date();
+      $scope.consulta.usuario.nombre="anonimo"+x.getTime();;
+      $scope.consulta.usuario.email="anonimo@anonimo";
+      $scope.consulta.usuario.user="anonimo";
+      $scope.consulta.usuario.password="anonimo";
+      $scope.consulta.usuario.telefono="04838383";
+    }
+
+    //metodo para agregar ubicacion de proveedores
+    $scope.addLocation= function(latitud, longitud, data){
+      var resultado;
+      console.log("****************** agregando registro:*************"+data.usuario);
+      MapService.createByCoords(latitud, longitud, data, function (marker) {           
+        var contentString = '<div id="content">'+
+          '<div id="siteNotice">'+
+          '</div>'+
+          '<center><h3 id="firstHeading">' +data.nombre+'</h3></center>'+
+          '<div id="bodyContent">'+
+          '<br><b>Tel&eacute;fono:</b> '+marker.telefono+
+          '<br><b>Usuario:</b>  '+ marker.usuario+
+          '<br><b>Mensaje:</b> '+marker.mensaje+
+          '</a></div>'+
+          '</div>';
+        var latLng = new google.maps.LatLng(marker.latitude, marker.longitude);               
+        console.log("listeners");
+        var mark = new google.maps.Marker({
+          map: $scope.map,
+          animation: google.maps.Animation.DROP,
+          position: latLng,
+           mensaje:marker.mensaje,
+          nombre:marker.nombre,
+          telefono:marker.telefono,
+          usuario:marker.usuario,
+        });                 
+        $scope.markers.push(mark);
+        console.log("size: "+$scope.markers.length);
+        var infoWindow = new google.maps.InfoWindow({
+          content: contentString
+        });           
+        google.maps.event.addListener(mark, 'click', function () {
+          infoWindow.open($scope.map, mark);
+        });
+        resultado = mark;        
+      });      
+       // $scope.map.markers.push(marker);
+        //refresh(marker);
+      return resultado;
+    }
+
+    //realizar busqueda
+    $scope.buscar = function () {
+      
+     
+      var categoria={};
+      categoria.id=$scope.consulta.categoria.id;
+      categoria.nombre=$scope.consulta.categoria.nombre;
+      categoria.descripcion=$scope.consulta.categoria.descripcion;
+      $scope.consulta.categoria=categoria;
+      
+      $scope.consulta.producto.descripcion=$scope.consulta.producto.nombre;
+      $scope.consulta.producto.id=0;
+      var resp="";
+      var men="";
+      men=$scope.consulta.producto.nombre;
+      //se obtienen los proveedores de la categoria
+      proveedorService.getProveedoresByCategoria($scope.consulta.categoria.nombre)
+        .success(function (data) {
+        console.log('Consultando proveedores.'+$scope.consulta.categoria.nombre);
+        $scope.proveedores=data;
+
+      }).error(function(error) {
+        $scope.status = 'Unable to get proveedores: ' + error.message;
+      }); 
+      consultaService.saveConsulta($scope.consulta)
+        .success(function (data) {
+            console.log('Saved Consulta.'+data);
+            console.log('response:'+data.id);
+            $scope.consultaId=data.id;
+            $scope.latitud = $scope.consulta.usuario.latitud;
+            $scope.longitud = $scope.consulta.usuario.longitud;            
+            $scope.categoriasSelected=[];
+      }).
+        error(function(error) {
+            $scope.status = 'Unable to insert consulta: ' + error.message;
+      }).finally(function(data){          
+          console.log("size"+$scope.proveedores.length);
+          for(var i=0; i<$scope.proveedores.length; i++){
+            console.log("proveedor: "+$scope.proveedores[i].usuario.user);              
+            var usuario = {
+                mensaje:"Sin mensaje",
+                nombre:$scope.proveedores[i].usuario.nombre,
+                telefono:$scope.proveedores[i].usuario.telefono,
+                usuario:$scope.proveedores[i].usuario.user,
+                id: 0         
+            };
+            $scope.addLocation($scope.proveedores[i].usuario.latitud, $scope.proveedores[i].usuario.longitud, usuario)
+            if($scope.userActual != $scope.proveedores[i].usuario.user){
+              if($scope.proveedores.length==(i+1)){
+                console.log("fin de ciclo");
+                  resp=resp+$scope.proveedores[i].usuario.user;
+              }else{
+                console.log("sigue el ciclo");
+                  resp=resp+$scope.proveedores[i].usuario.user+"&&";
+              }
+            }else {
+              console.log("usuario que envia la consulta");
+            }                
+          }
+          console.log("resp"+resp);
+          console.log("data a proveedores");
+          //$scope.sendData();
+          var msg = '{"id":'+$scope.consultaId+', "mensaje":"' + men + '", "users":"'+resp+'","latitud":"'+$scope.latitud+'","longitud":"'+$scope.longitud+'"}';
+          console.log("msj:"+msg);
+          ws.send(msg);                      
+      });
+    }
+
+    //Se carga ubicacion
+    MapService.createByCurrentLocation(function (marker) {
+        console.log("Llamando al service test");
+        marker.options.labelContent = 'Usted esta aqu&iacute;';
+        $scope.consulta.usuario.latitud=marker.latitude;
+        $scope.consulta.usuario.longitud=marker.longitude;                
+        //refresh(marker
+        var latLng = new google.maps.LatLng($scope.consulta.usuario.latitud, $scope.consulta.usuario.longitud);
+        var mapOptions = {
+          center: latLng,
+          zoom: 10,
+          mapTypeId: google.maps.MapTypeId.ROADMAP
+        };     
+        $scope.map = new google.maps.Map(document.getElementById("map"), mapOptions);
+        google.maps.event.addListenerOnce($scope.map, 'idle', function(){           
+                var mark = new google.maps.Marker({
+                  map: $scope.map,
+                  animation: google.maps.Animation.DROP,
+                  position: latLng,
+                  mensaje:"mensaje",
+                  nombre:"usuario-ajustado",
+                  telefono:"555-555",
+                  usuario:"usuario-ajustado",
+                });      
+                $scope.markers.push(mark);
+             console.log("size: "+$scope.markers.length);
+             var contentString = '<div id="content">'+
+                '<div id="siteNotice">'+
+                '</div>'+
+                '<h3 id="firstHeading">Proveedor</h3>'+
+                '<div id="bodyContent">'+
+                '<p><b>Nombre:</b> ' +mark.nombre+
+                '<br><b>Tel&eacute;fono:</b> '+mark.telefono+
+                '<br><b>Usuario:</b>  '+ mark.usuario+
+                '<br><b>Mensaje:</b>  '+mark.mensaje+
+                '</div>'+
+                '</div>';
+              var infoWindow = new google.maps.InfoWindow({
+                  content:"Usted esta aqu&iacute; !"
+              });
+             
+            google.maps.event.addListener(mark, 'click', function () {
+                infoWindow.open($scope.map, mark);
+            });
+        });
+        //hace la busqueda
+        $scope.buscar();
+          
+     });
+})
+
 .controller('busquedaCtrl', function($scope, categoriaService, consultaService, $cordovaGeolocation, MapService, sharedConn, $stateParams, ChatDetails, $ionicPopup, proveedorService, usuarioService) {
   console.log("busquedaCtrl")
   $scope.categorias=[];

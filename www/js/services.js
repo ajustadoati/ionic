@@ -96,8 +96,16 @@ return proveedorService;
   var consultaService ={};
 
   consultaService.saveConsulta = function (consulta) {
-        console.log("Service: Guardando Proveedor");
-        return $http.post(url, consulta);
+        console.log("Service: Guardando consulta");
+        console.log("saveConsulta..."+consulta.categoria.nombre);
+        console.log("saveConsulta..."+consulta.categoria.descripcion);
+        var cons={
+            "producto":consulta.producto,
+            "categoria":consulta.categoria,
+            "usuario":consulta.usuario
+        };
+        console.log("saveConsulta..."+cons);
+        return $http.post(url, cons);
     };
 
     consultaService.getConsultaByUser = function (user) {
@@ -228,10 +236,6 @@ console.log("Service: Getting gategorias")
         });
       
     }
-
-
-    
-
     return {
         getCurrentLocation: getCurrentLocation,
         createByCoords: createByCoords,
