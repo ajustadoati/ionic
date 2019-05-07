@@ -478,22 +478,28 @@ angular.module('app.controllers', [])
     //metodo para agregar ubicacion de proveedores
     $scope.addLocation= function(latitud, longitud, data){
       var resultado;
-      console.log("****************** agregando registro:*************"+data.usuario);
+      console.debug("****************** agregando registro:*************"+data.usuario);
       MapService.createByCoords(latitud, longitud, data, function (marker) {           
-        var contentString = '<div id="content">'+
-          '<div id="siteNotice">'+
-          '</div>'+
-          '<center><h3 id="firstHeading">' +data.nombre+'</h3></center>'+
-          '<div id="bodyContent">'+
-          '<br><b>Tel&eacute;fono:</b> '+marker.telefono+
-          '<br><b>Usuario:</b>  '+ marker.usuario+
-          '<br><b>Mensaje:</b> '+marker.mensaje+
-          '</a></div>'+
-          '</div>';
+        var contentString = '<div>'+
+                '<label style="color: white;"><b>'+marker.nombre+'</b></label>'+
+                '<div class="spacer" style="height: 10px;"></div>'+
+                  '<div><label style="color: white;">M&oacute;vil</label></div>'+
+                  '<div class="row">'+
+                    '<div class = "col-30" ><label style="color: white;"><b>'+marker.telefono+'</b></label></div>'+
+                    '<div class = "col-20" ></div>'+
+                    '<div class = "col-50"><img src="img/icon_message.png" width="25" height="25"/><img src="img/icon_phone.png" width="25" height="25"></div>'+
+                  '</div></div></div>';
         var latLng = new google.maps.LatLng(marker.latitude, marker.longitude);               
-        console.log("listeners");
+        
+        var icon = {
+            url: "img/icon_orange.png", // url
+            scaledSize: new google.maps.Size(30, 30), // scaled size
+            origin: new google.maps.Point(0,0), // origin
+            anchor: new google.maps.Point(0, 0) // anchor
+        };
         var mark = new google.maps.Marker({
           map: $scope.map,
+          icon: icon,
           animation: google.maps.Animation.DROP,
           position: latLng,
            mensaje:marker.mensaje,
@@ -503,9 +509,13 @@ angular.module('app.controllers', [])
         });                 
         $scope.markers.push(mark);
         console.log("size: "+$scope.markers.length);
+        
         var infoWindow = new google.maps.InfoWindow({
           content: contentString
         });           
+        google.maps.event.addListenerOnce($scope.map, 'idle', function(){
+            jQuery('.gm-style-iw').prev('div').remove();
+        }); 
         google.maps.event.addListener(mark, 'click', function () {
           infoWindow.open($scope.map, mark);
         });
@@ -595,12 +605,23 @@ angular.module('app.controllers', [])
         var mapOptions = {
           center: latLng,
           zoom: 10,
+          noClear: true,
           mapTypeId: google.maps.MapTypeId.ROADMAP
         };     
         $scope.map = new google.maps.Map(document.getElementById("map"), mapOptions);
+        var icon = {
+            url: "img/icon_green.png", // url
+            scaledSize: new google.maps.Size(30, 30), // scaled size
+            origin: new google.maps.Point(0,0), // origin
+            anchor: new google.maps.Point(0, 0) // anchor
+        };
+        google.maps.event.addListenerOnce($scope.map, 'idle', function(){
+            jQuery('.gm-style-iw').prev('div').remove();
+        }); 
         google.maps.event.addListenerOnce($scope.map, 'idle', function(){           
                 var mark = new google.maps.Marker({
                   map: $scope.map,
+                  icon: icon,
                   animation: google.maps.Animation.DROP,
                   position: latLng,
                   mensaje:"mensaje",
@@ -610,6 +631,7 @@ angular.module('app.controllers', [])
                 });      
                 $scope.markers.push(mark);
              console.log("size: "+$scope.markers.length);
+             
              var contentString = '<div id="content">'+
                 '<div id="siteNotice">'+
                 '</div>'+

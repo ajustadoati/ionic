@@ -1,19 +1,24 @@
 <ion-view title="Búsqueda">
     <ion-content overflow-scroll="true" padding="true" scroll="true">
+         <!--<div style="background: url(img/ben.png);width: 200px;height: 200px;position: relative;"></div>-->
         <div id="map" data-tap-disabled="true"></div>
+       
                   
 
                    
-        
-        <div style="background: url('img/background_footer_search.png'); background-size: 100% 200px; margin: 0 auto; text-align: center; width: 100%; height: 200px;">
-          <span class="input-label" style="max-width: 100%;width: 100%;">Resultado</span>
-          <div class="spacer" style="height: 100px;"></div>
+        <div class="spacer" style="height: 40px; text-align: center;"> <label>! Pulsa sobre el &iacute;cono para ver la informaci&oacute;n del proveedor !</label></div>
+        <div id="footerResult">
+          <span class="input-label" style="max-width: 100%;width: 100%;"></span>
+          <div class="spacer" style="height: 50px;"></div>
           <div class = "row">
 
-              <div class = "col-50" ><label>Producto</label></div>
+              <div class = "col-50" ><label>{{consulta.producto.nombre}}</label><br/><img src="img/line_green.png" width="150" height="10"></img><br/>
+                <label>Producto</label>
+              </div>
               
              
-              <div class = "col-50" style="text-align: center;"><label>Categor'ia</label></div>
+              <div class = "col-50" style="text-align: center;"><label>{{consulta.categoria.nombre}}</label><br/><img src="img/line_green.png" width="150" height="10"></img><br/>
+                <label>Categor&iacute;a</label></div>
               
 
           </div>
