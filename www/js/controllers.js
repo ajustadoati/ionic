@@ -198,6 +198,7 @@ angular.module('app.controllers', [])
   $scope.proveedor.usuario={};
   $scope.proveedor.categorias=[];
 
+
   $scope.onValueChanged = function(value){
     console.log(value);
     var cats=value.split("-");  
@@ -230,14 +231,12 @@ angular.module('app.controllers', [])
         categoriaService.getCategorias()
             .success(function (categorias) {
                 for(var i=0; i<categorias.length;i++){
-                    var categoria=[];
-                    
+                    var categoria=[];                    
                     categoria.selected=false;
                     categoria.id=i;
                     categoria.nombre=categorias[i].nombre;
                     categoria.descripcion=categorias[i].descripcion;
-                    $scope.categorias.push(categoria);
-                
+                    $scope.categorias.push(categoria);                
                }
                 $scope.data = categorias;
             })
@@ -259,21 +258,28 @@ angular.module('app.controllers', [])
 
         var mapOptions = {
           center: latLng,
-          zoom: 15,
-          mapTypeId: google.maps.MapTypeId.ROADMAP
+          zoom: 10,
+          mapTypeId: google.maps.MapTypeId.ROADMAP,
+          disableDefaultUI: true
         };
      
         $scope.map = new google.maps.Map(document.getElementById("map"), mapOptions);
         google.maps.event.addListenerOnce($scope.map, 'idle', function(){
-     
-              var marker = new google.maps.Marker({
+            var icon = {
+                url: "img/icon_green.png", // url
+                scaledSize: new google.maps.Size(30, 30), // scaled size
+                origin: new google.maps.Point(0,0), // origin
+                anchor: new google.maps.Point(0, 0) // anchor
+            };
+            var marker = new google.maps.Marker({
                 map: $scope.map,
                 animation: google.maps.Animation.DROP,
-                position: latLng
+                position: latLng,
+                icon:icon
             });      
            
             var infoWindow = new google.maps.InfoWindow({
-                content: "Here I am!"
+                content: "Usted esta aqu&iacute;"
             });
            
           google.maps.event.addListener(marker, 'click', function () {

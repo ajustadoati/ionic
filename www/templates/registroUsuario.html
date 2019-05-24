@@ -1,39 +1,99 @@
-<ion-view>
-    <ion-content overflow-scroll="true" padding="true" scroll="true" class="has-header">
-        <div id="map" data-tap-disabled="true"></div>
+<ion-view title="result">
+    <ion-content overflow-scroll="true" padding="true" scroll="true" has-header="true" style="text-align:-webkit-center;">
+            <div style="line-height: 0px; border: 0px solid rgb(238, 238, 238); border-radius: 3px; text-align: center; width: 100%; height: auto; background-color: rgb(255, 255, 255);">
+                 <div class="spacer" style="height: 30px;"></div>
+                <img src="img/logo_ajustado.png" width="250" height="50"></img>
+                <div class="spacer" style="height: 30px;"></div>
+                <img src="img/title_registro.png" width="60" height="20"></img>
+                <div class="spacer" style="height: 30px;"></div>
+                 <div style="background: url('img/input_email.png'); background-size: 250px 50px; margin: 0 auto; text-align: center; width: 250px; height: 50px;">
+                    <label class="item_login item-input">
+                    
+                        <input type="text" size="10" ng-model="usuario.email"  placeholder="Correo">
+                    </label>
+                  </div>
+                <div class="spacer" style="height: 10px;"></div>
+                 <div style="background: url('img/input_phone.png'); background-size: 250px 50px; margin: 0 auto; text-align: center; width: 250px; height: 50px;">
+                    <label class="item_login item-input">
+                    
+                        <input type="text" size="10" ng-model="usuario.email"  placeholder="Tel&eacute;fono">
+                    </label>
+                  </div>
+                  <div class="spacer" style="height: 10px;"></div>
+            </div>
+            <div id="maper"  style="border:2px; background-color: cadetblue;" data-tap-disabled="true"></div>
+            <div style="line-height: 0px; border: 0px solid rgb(238, 238, 238); border-radius: 3px; text-align: center; width: 100%; height: auto; background-color: rgb(255, 255, 255);">                 
+                <div class="spacer" style="height: 10px;"></div>
+                  <div style="background: url('img/input_user.png'); background-size: 250px 50px; margin: 0 auto; text-align: center; width: 250px; height: 50px;">
+                    <label class="item_login item-input">
+                    
+                        <input type="text" size="10" ng-model="usuario.email"  placeholder="Usuario">
+                    </label>
+                  </div>
+                 <div class="spacer" style="height: 10px;"></div>
+                  <div style="background: url('img/input_password.png'); background-size: 250px 50px; margin: 0 auto; text-align: center; width: 250px; height: 50px;">
+                    <label class="item_login item-input">
+                    
+                        <input type="password" size="30" ng-model="usuario.user"  placeholder="Clave">
+                    </label>
+                  </div>
+                  <div class="spacer" style="height: 10px;"></div>
+                  <div style="background: url('img/input_password.png'); background-size: 250px 50px; margin: 0 auto; text-align: center; width: 250px; height: 50px;">
+                    <label class="item_login item-input">
+                    
+                        <input type="password" size="30" ng-model="usuario.user"  placeholder="Repetir clave">
+                    </label>
+                  </div>
+                  <div class="spacer" style="height: 10px;"></div>
+            </div>
+        
         <form class="list" name="newUsuarioForm">
-            <ion-list>
-                <label class="item item-input">
-                    <span class="input-label">Correo</span>
-                    <input type="text" ng-model="usuario.email" placeholder="" required>
-                </label>
-                <label class="item item-input">
-                    <span class="input-label">Usuario</span>
-                    <input type="text" ng-model="usuario.user" placeholder="" required>
-                </label>
-                <label class="item item-input">
-                    <span class="input-label">Clave</span>
-                    <input type="password" ng-model="usuario.password"  placeholder="" required>
-                </label>
-            </ion-list>
-            <multiselect
-              header-text="Header"
-              items="data"
-              text-property="nombre"
-              value-property="nombre"
-              is-translate="false"
-              index-translate="TAG_TRANSLATE"
-              text="Categor&iacute;as"
-              modal-template-url="lib/ionic-multiselect/dist/templates/modal-template.html"
-              template-url="lib/ionic-multiselect/dist/templates/item-template.html"
-              note-text="Registrar Categor&iacute;as si es Proveedor"
-              value-changed="onValueChanged(value)">
-            </multiselect>
-            <input type="submit"
-                       class="button button-stable button-block "
-                       ng-click="crearUsuario(newUsuarioForm);"
-                       value='Guardar'/>
-            
+            <div align="center" style="line-height: 0px; border: 0px solid rgb(238, 238, 238); border-radius: 3px; text-align: center; width: 100%; height: auto; background-color: rgb(255, 255, 255);">
+                  <div class="spacer" style="height: 15px;"></div>
+                  <div class="spacer" style="height: 15px;"><label>Selecciona las categor&iacute;as de los servicios que ofreces </label></div>
+                  <div class="spacer" style="height: 10px;"></div>
+                  <div style="background: url('img/input_cat.png'); background-size: 270px 60px; margin: 0 auto; text-align: center; width: 270px; height: 60px;">
+                    <label class="item_category item-input">
+                        <multiselect
+                          header-text="Header"
+                          items="data"
+                          text-property="nombre"
+                          value-property="nombre"
+                          is-translate="false"
+                          index-translate="TAG_TRANSLATE"
+                          text="Categor&iacute;as"
+                          modal-template-url="lib/ionic-multiselect/dist/templates/modal-template.html"
+                          template-url="lib/ionic-multiselect/dist/templates/item-template.html"
+                          note-text=""
+                          value-changed="onValueChanged(value)">
+                        </multiselect>
+                    </label>
+                  </div>
+
+                  
+                  <div class="spacer" style="height: 20px;"></div>
+                  <div class="spacer" style="height: 40px;padding-right: 50px;">
+                      
+                      
+                      <input id="trigger" type="checkbox" ng-model="usuario.currency" >
+                      <label for="trigger" class="checker" style="padding-left: 36px;font-size: 12px;color:darkgrey;">¿ Acepta criptomonedas ?</label>
+
+                     
+                  </div>
+                  <div align="left" style="line-height: 0px; border: 0px solid rgb(238, 238, 238); border-radius: 3px; text-align: center; width: 100%; height: auto; background-color: rgb(255, 255, 255);">
+                    <div class="spacer" style="height: 20px;"></div>
+                    <img src="img/btn_register.png" width="150" height="45" ng-click="crearUsuario(newUsuarioForm);"></img>
+                  </div>
+            </div>
+            <div align="left" style="line-height: 0px; border: 0px solid rgb(238, 238, 238); border-radius: 3px; text-align:left; width: 100%; height:auto; background-color: rgb(255, 255, 255);">
+                <div class="spacer" style="height: 10px;"></div>
+                <div class = "row">
+                    <div class = "col-20" ><img src="img/footer.png" width="100" height="100"></img></div>
+                    <div class = "col-10" ></div>
+                    <div class = "col-50" style="text-align: center;">   
+                    </div>
+                </div>
+            </div>
         </form>
     </ion-content>
 </ion-view>

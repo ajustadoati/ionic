@@ -1,9 +1,9 @@
 <ion-list>
-  <ion-item ng-click="showItems($event)">
-    <div ng-repeat="item in text | showTextData:this">
+  <ion-item ng-click="showItems($event)" style="background-color: #ffffff17; width: 190px;height: 45px;padding: 0px; border: 0px;">
+    <div ng-repeat="item in text | showTextData:this" class="item-template">
       {{ item }}
     </div>
 
-    <span class="item-note">{{noteText}}</span>
+    <span class="item-note-category">{{noteText}}</span>
   </ion-item>
 </ion-list>
