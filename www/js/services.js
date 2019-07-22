@@ -66,6 +66,29 @@ angular.module('app.services', [])
   
 }])
 
+.factory('criptomonedaService', ['$http', function ($http) {
+
+  var url = 'https://www.ajustadoati.com:9000/ajustadoati/criptomoneda/';
+
+  var criptomonedaService ={};
+
+    criptomonedaService.saveCriptomoneda = function (criptomoneda) {
+            console.log("Service: Saving device");
+        return $http.post(url, criptomoneda);
+    };
+
+
+    criptomonedaService.getListCriptomonedaByUsuario = function (usuario) {
+        console.log("Service: Getting device:"+usuario);
+        return $http.get(url+"usuario/"+usuario);
+    };
+    
+    
+    return criptomonedaService;
+  
+  
+}])
+
 .factory('proveedorService', ['$http', function ($http) {
 
   var url = 'https://www.ajustadoati.com:9000/ajustadoati/proveedor/';
@@ -99,13 +122,16 @@ return proveedorService;
         console.log("Service: Guardando consulta");
         console.log("saveConsulta..."+consulta.categoria.nombre);
         console.log("saveConsulta..."+consulta.categoria.descripcion);
+        console.log("saveConsulta..."+consulta.usuario.user);
+        console.log("saveConsulta..."+consulta.usuario.telefono);
+
         var cons={
             "producto":consulta.producto,
-            "categoria":consulta.categoria,
+            "categoria":{nombre:consulta.categoria.nombre, descripcion:consulta.categoria.descripcion},
             "usuario":consulta.usuario
         };
-        console.log("saveConsulta..."+cons);
-        return $http.post(url, cons);
+        console.log("saveConsulta... categoria: "+cons.categoria.nombre);
+        return $http.post(url, consulta);
     };
 
     consultaService.getConsultaByUser = function (user) {
@@ -259,8 +285,7 @@ console.log("Service: Getting gategorias")
     PeticionObj.peticiones=[];
 
     PeticionObj.getAll = function() {
-        console.log("Buscando consultas by user");
-        
+        console.debug("Service: Searching by user ");
         return PeticionObj.peticiones;
     }
     PeticionObj.getConsultas = function(user) {
@@ -269,20 +294,19 @@ console.log("Service: Getting gategorias")
     }
 
      PeticionObj.deleteAll = function() {
-        
+        console.log("removing requests for user");
         PeticionObj.peticiones=[];
     }
 
 
     loadConsultasByUser = function(user) {
         consultaService.getConsultaByUser(user).success(function (data) {
-            console.log("consultas: "+data.lenth);
+            
             for (var i = 0; i < data.length; i++) {
-                console.log("consulta: "+data[i].usuario.user);
                 var us = data[i].usuario.user;
                 if(us == "anonimo"){
-                    console.log("recibiendo usuario: "+us)
-                    us = "admin"
+                    console.debug("recibiendo usuario: "+us)
+                    us = "Admin"
                 }
                 var d = new Date();
                 d = d.toLocaleTimeString().replace(/:\d+ /, ' ');
@@ -533,7 +557,7 @@ $ionicPopup for making Responsive Popups
     //Login Function
     SharedConnObj.login=function (jid,host,pass) { 
         console.log("jid"+jid);
-        console.log("pass"+pass);  
+        //console.log("pass"+pass);  
         //Strophe syntax
         // We are creating Strophe connection Object
         SharedConnObj.connection = new Strophe.Connection( SharedConnObj.BOSH_SERVICE , {'keepalive': true});  // We initialize the Strophe connection.
@@ -570,7 +594,7 @@ $ionicPopup for making Responsive Popups
             //Now finally go the Chats page  
             var userJ = SharedConnObj.getBareJid().split("@");
             var userJID = SharedConnObj.getBareJid().split("@")[0];
-            console.log("pass the login"+userJID);
+            //console.log("pass the login"+userJID);
             //validateDevice(userJID);
 
             Peticiones.getConsultas(userJID);
@@ -763,6 +787,7 @@ $ionicPopup for making Responsive Popups
             SharedConnObj.connection.options.sync = true; // Switch to using synchronous requests since this is typically called onUnload.
             SharedConnObj.connection.flush();  //Removes all the connection variables
             SharedConnObj.connection.disconnect(); //Disconnects from the server
+            Peticiones.deleteAll();
         } //In chrome you can use console.log("TEXT") for dubugging
         
     };

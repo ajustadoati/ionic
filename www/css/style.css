@@ -1,21 +1,20 @@
 #map{
-    background: url(../img/background_map.png); 
-    background-size: 300px 200px; 
-    width: 300px;
-    height: 200px;
+
+    width: 100%;
+    height: 55%;
     
     
 }
 #maper{
     background: url(../img/background_map.png); 
-    background-size: 300px 200px; 
-    width: 300px;
+    background-size: 250px 200px; 
+    width: 250px;
     height: 200px;
 
 }
 #mapRequest{
     width:100%;
-    height:100%;
+    height:85%;
     
 }
 
@@ -32,15 +31,23 @@
 
 #footerResult{
   background: url('../img/background_footer_search.png'); 
-  background-size: 100% 150px; 
+  background-size: 100% 80px; 
   margin: 0 auto; 
   text-align: center; 
   width: 100%; 
-  height: 150px;"
+  height: 80px;"
+}
+#footerBuscar{
+  background: url('../img/background_footer_search.png'); 
+  background-size: 100% 70px; 
+  margin: 0 auto; 
+  text-align: center; 
+  width: 100%; 
+  height: 70px;"
 }
 
 .gm-style-iw {
-    width: 200px !important;
+    width: 178px !important;
     height: 95px;
     top: 8px !important;
     left: 0px !important;
@@ -111,6 +118,19 @@
   padding: 13px;
   padding-left: 45px;
   font-size: 16px; }
+
+.item_busqueda {
+  border-color: #ddd;
+  background-color: #ffffff0d;
+  color: #444;
+  position: relative;
+  z-index: 2;
+  display: block;
+  margin: -1px;
+  padding: 15px;
+  padding-left: 60px;
+  font-size: 16px; }
+
 
   .item_category {
   border-color: #ddd;

@@ -67,7 +67,7 @@ angular.module('app.routes', [])
             mensaje:null
       },
       views: {
-        'tab4': {
+        'tab6': {
           templateUrl: 'templates/busqueda.html',
           controller: 'busquedaCtrl'
         }
@@ -77,7 +77,7 @@ angular.module('app.routes', [])
     .state('tabsController.peticion', {
       url: '/peticion',
       views: {
-        'tab6': {
+        'tab4': {
           templateUrl: 'templates/peticion.html',
           controller: 'peticionCtrl'
         }
@@ -91,7 +91,7 @@ angular.module('app.routes', [])
             peticion:null
       },
       views: {
-        'tab6': {
+        'tab4': {
           templateUrl: 'templates/peticionDetalle.html',
           controller: 'peticionDetalleCtrl'
         }
@@ -188,7 +188,7 @@ angular.module('app.routes', [])
     .state('tabsController.productos', {
       url: '/items',
       views: {
-        'tab6': {
+        'tab12': {
           templateUrl: 'templates/productos.html',
           controller: 'productosCtrl'
         }

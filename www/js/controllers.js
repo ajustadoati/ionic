@@ -13,9 +13,12 @@ angular.module('app.controllers', [])
 //sharedConn.login(xmpp_user,XMPP_DOMAIN,xmpp_pass);  //Debuggin purpose
 
   $scope.loginUsuario = function (newUsuarioForm) {
-     console.log("saving user");
+     console.debug("login user");
+     var user = $scope.usuarioLogin.password.toLowerCase();
+     var password = $scope.usuarioLogin.user.toLowerCase();
+
          //uuu
-          sharedConn.login($scope.usuarioLogin.user,XMPP_DOMAIN,$scope.usuarioLogin.password);
+          sharedConn.login(user,XMPP_DOMAIN,password);
            
       /*usuarioService.getUserByUserAndLogin($scope.usuarioLogin)
         .success(function (data) {
@@ -73,7 +76,8 @@ angular.module('app.controllers', [])
           var mapOptions = {
             center: latLng,
             zoom: 15,
-            mapTypeId: google.maps.MapTypeId.ROADMAP
+            mapTypeId: google.maps.MapTypeId.ROADMAP,
+            disableDefaultUI: true
           };
        
           $scope.map = new google.maps.Map(document.getElementById("map"), mapOptions);
@@ -189,7 +193,7 @@ angular.module('app.controllers', [])
 })
 
    
-.controller('registroUsuarioCtrl', function($scope, usuarioService, $state, MapService, categoriaService, proveedorService, $ionicPlatform, $ionicPopup) {
+.controller('registroUsuarioCtrl', function($scope, usuarioService, $state, MapService, categoriaService, proveedorService, $ionicPlatform, $ionicPopup, criptomonedaService) {
 	console.log("registroUsuarioCtrl");
 	$scope.usuario={};
   $scope.proveedor={};
@@ -197,6 +201,7 @@ angular.module('app.controllers', [])
   $scope.categoriasSelected=[];
   $scope.proveedor.usuario={};
   $scope.proveedor.categorias=[];
+  $scope.categoriaSelected={};
 
 
   $scope.onValueChanged = function(value){
@@ -206,23 +211,25 @@ angular.module('app.controllers', [])
       
       for(var i=0;i<cats.length;i++){
         console.log("categoria:"+cats[i]);
-          for(var j=0; j<$scope.categorias.length;j++){
-                    var categoria=[];
-                    
-                    //categoria.selected=false;
-                    categoria.id=j;
-                    categoria.nombre=$scope.categorias[j].nombre;
-                    categoria.descripcion=$scope.categorias[j].descripcion;
-                    
-                    if(categoria.nombre===cats[i]){
-                      console.log("Se agrega la categoria:"+categoria.nombre);
-                      $scope.categoriasSelected.push(categoria);
-                    }
-               }
+        for(var j=0; j<$scope.categorias.length;j++){
+            var categoria=[];
+            
+            //categoria.selected=false;
+            categoria.id=j;
+            categoria.nombre=$scope.categorias[j].nombre;
+            categoria.descripcion=$scope.categorias[j].descripcion;
+            
+            if(categoria.nombre===cats[i]){
+              console.log("Se agrega la categoria:"+categoria.nombre);
+              $scope.categoriasSelected.push(categoria);
+            }
+        }
       }
     }
 
   }
+
+ 
 
   getCategorias();
 
@@ -248,112 +255,158 @@ angular.module('app.controllers', [])
     //cargando mapa desde el service
   
     MapService.createByCurrentLocation(function (marker) {
-              console.log("Llamando al service");
-              marker.options.labelContent = 'Usted esta aqu&iacute;';
-              $scope.usuario.latitud=marker.latitude;
-              $scope.usuario.longitud=marker.longitude;
-              //$scope.map.markers.push(marker);
-              //refresh(marker
-              var latLng = new google.maps.LatLng($scope.usuario.latitud, $scope.usuario.longitud);
+      console.log("Llamando al service");
+      marker.options.labelContent = 'Usted esta aqu&iacute;';
+      $scope.usuario.latitud=marker.latitude;
+      $scope.usuario.longitud=marker.longitude;
+      //$scope.map.markers.push(marker);
+      //refresh(marker
+      var latLng = new google.maps.LatLng($scope.usuario.latitud, $scope.usuario.longitud);
 
-        var mapOptions = {
-          center: latLng,
-          zoom: 10,
-          mapTypeId: google.maps.MapTypeId.ROADMAP,
-          disableDefaultUI: true
-        };
-     
-        $scope.map = new google.maps.Map(document.getElementById("map"), mapOptions);
-        google.maps.event.addListenerOnce($scope.map, 'idle', function(){
-            var icon = {
-                url: "img/icon_green.png", // url
-                scaledSize: new google.maps.Size(30, 30), // scaled size
-                origin: new google.maps.Point(0,0), // origin
-                anchor: new google.maps.Point(0, 0) // anchor
-            };
-            var marker = new google.maps.Marker({
-                map: $scope.map,
-                animation: google.maps.Animation.DROP,
-                position: latLng,
-                icon:icon
-            });      
-           
-            var infoWindow = new google.maps.InfoWindow({
-                content: "Usted esta aqu&iacute;"
-            });
-           
-          google.maps.event.addListener(marker, 'click', function () {
-              infoWindow.open($scope.map, marker);
+      var mapOptions = {
+        center: latLng,
+        zoom: 13,
+        mapTypeId: google.maps.MapTypeId.ROADMAP,
+        disableDefaultUI: true
+      };
+   
+      $scope.map = new google.maps.Map(document.getElementById("maper"), mapOptions);
+      google.maps.event.addListenerOnce($scope.map, 'idle', function(){
+          var icon = {
+              url: "img/icon_green.png", // url
+              scaledSize: new google.maps.Size(30, 30), // scaled size
+              origin: new google.maps.Point(0,0), // origin
+              anchor: new google.maps.Point(0, 0) // anchor
+          };
+          var marker = new google.maps.Marker({
+              map: $scope.map,
+              animation: google.maps.Animation.DROP,
+              position: latLng,
+              icon:icon
+          });      
+         
+          var infoWindow = new google.maps.InfoWindow({
+              content: "Usted esta aqu&iacute;"
           });
+         
+        google.maps.event.addListener(marker, 'click', function () {
+            infoWindow.open($scope.map, marker);
         });
+      });
    });
               
-        
+    $scope.validarPassword = function(){
+      console.info("validando password");
+       if($scope.usuario.password != $scope.usuario.password2){
+        var alertPopup = $ionicPopup.alert({
+                  title: 'El password no es igual !',
+                  template: 'Password incorrecto '
+                });
+      }
+    }
 
         //si es un usuario vendedor o usuario normal
-	     $scope.crearUsuario = function (newUsuarioForm) {
-                //valores por defecto para los demas campos
-                $scope.usuario.nombre=$scope.usuario.user;
-                $scope.usuario.telefono=$scope.usuario.user;
-                $scope.usuario.twitter=$scope.usuario.user;
-                console.log("guardando usuario !!"+ $scope.usuario);
-                console.log("nombre: "+$scope.usuario.nombre);
-                console.log("email: "+$scope.usuario.email);
-                console.log("lat: "+$scope.usuario.latitud);
-                console.log("long: "+$scope.usuario.longitud);
-                console.log("user: "+$scope.usuario.user);
-                console.log("pass: "+$scope.usuario.password);
-                console.log("twitter:"+$scope.usuario.telefono);
-                if($scope.categoriasSelected.length > 0){
-                 for(var i=0; i<$scope.categoriasSelected.length;i++){
-                    console.log("categorias:"+$scope.categoriasSelected[i].nombre);
-                    var categoria={};
-                    //categoria.id=$scope.selection[i];
-                    categoria.nombre=$scope.categoriasSelected[i].nombre;
-                    categoria.descripcion=$scope.categoriasSelected[i].descripcion;
-                    $scope.proveedor.categorias.push(categoria);
-                  }
-                  $scope.proveedor.usuario=$scope.usuario;
-                  proveedorService.saveProveedor($scope.proveedor)
-                    .success(function () {
-                        console.log('Saved Proveedor.');
-                        $scope.proveedor={};
-                        $scope.categoriasSelected=[];
-                        var alertPopup = $ionicPopup.alert({
-                            title: 'Usuario creado !',
-                            template: 'Gracias por darte de alta.'
-                          });
-                        $state.go("login");
-                    }).
-                    error(function(error) {
-                         var alertPopup = $ionicPopup.alert({
-                            title: 'El usuario no se ha creado !',
-                            template: 'Completa los campos y espera que se cargue la ubicaci&oacute;n'
-                          });
-                        $scope.status = 'Unable to insert proveedor: ' + error.message;
-                    });
-                  }else{
-               
-                		usuarioService.saveUsuario($scope.usuario)
-        	            .success(function () {
-        	                console.log('Saved Usuario.');
-        	                $scope.usuario={};
-                          var alertPopup = $ionicPopup.alert({
-                            title: 'Usuario creado !',
-                            template: 'Gracias por darte de alta.'
-                          });
-        	                $state.go("login");
+    $scope.crearUsuario = function (newUsuarioForm) {
+    
+      //valores por defecto para los demas campos
+      $scope.usuario.nombre=$scope.usuario.user;
+      //$scope.usuario.telefono=$scope.usuario.telefono;
+      $scope.usuario.twitter=$scope.usuario.user;
+      
+      if($scope.categoriasSelected.length > 0){
+       for(var i=0; i<$scope.categoriasSelected.length;i++){
+  
+          var categoria={};
+          //categoria.id=$scope.selection[i];
+          categoria.nombre=$scope.categoriasSelected[i].nombre;
+          categoria.descripcion=$scope.categoriasSelected[i].descripcion;
+          $scope.proveedor.categorias.push(categoria);
+        }
+        $scope.proveedor.usuario=$scope.usuario;
+        proveedorService.saveProveedor($scope.proveedor)
+          .success(function () {
+              console.log('Saved Proveedor.');
+              $scope.proveedor={};
+              $scope.categoriasSelected=[];
+               if($scope.usuario.criptomoneda){
+                 console.info("creando criptomoneda");
+                
+                var x = new Date();
+                //se agrega el tiempo para que sea una cuenta unica para futuro
+                var address = "HAXASIMSUSNIAU76878bsdjsjd"+x.getTime();
 
-        	            }).
-        	            error(function(error) {
-                        var alertPopup = $ionicPopup.alert({
-                            title: 'El usuario no se ha creado !',
-                            template: 'Completa los campos y espera que se cargue la ubicaci&oacute;n'
-                          });
-        	                $scope.status = 'Unable to insert usuario: ' + error.message;
-        	            });
-                  }
-      }
+                var criptomoneda = {
+                    "criptomoneda": {
+                    "tipo": "Ethereum",
+                    "nombre": "Ether",
+                    "descripcion": "criptomoneda",
+                    "address": address
+                  },
+                  "usuario": $scope.usuario.user
+                }
+                
+                criptomonedaService.saveCriptomoneda(criptomoneda).success(function () {
+                  console.info("se ha agregado criptomoneda al usuario");
+                });
+              }
+              var alertPopup = $ionicPopup.alert({
+                  title: 'Usuario creado !',
+                  template: 'Gracias por darte de alta.'
+                });
+
+              $state.go("login");
+          }).
+          error(function(error) {
+               var alertPopup = $ionicPopup.alert({
+                  title: 'El usuario no se ha creado !',
+                  template: 'Completa los campos y espera que se cargue la ubicaci&oacute;n'
+                });
+              $scope.status = 'Unable to insert proveedor: ' + error.message;
+          });
+        }else{
+     
+      		usuarioService.saveUsuario($scope.usuario)
+            .success(function () {
+              console.log('Saved Usuario.');
+              if($scope.usuario.criptomoneda){
+                 console.info("creando criptomoneda");
+                var x = new Date();
+                //se agrega el tiempo para que sea una cuenta unica para futuro
+                var address = "HAXASIMSUSNIAU76878bsdjsjd"+x.getTime();
+
+                var criptomoneda = {
+                    "criptomoneda": {
+                    "tipo": "Ethereum",
+                    "nombre": "Ether",
+                    "descripcion": "criptomoneda",
+                    "address": address
+                  },
+                  "usuario": $scope.usuario
+                }
+                
+                criptomonedaService.saveCriptomoneda(criptomoneda).success(function () {
+                  console.info("se ha agregado criptomoneda al usuario");
+                })
+              }
+              $scope.usuario={};
+
+              var alertPopup = $ionicPopup.alert({
+                title: 'Usuario creado !',
+                template: 'Gracias por darte de alta.'
+              });
+              
+              $state.go("login");
+
+            }).
+            error(function(error) {
+              var alertPopup = $ionicPopup.alert({
+                  title: 'El usuario no se ha creado !',
+                  template: 'Completa los campos y espera que se cargue la ubicaci&oacute;n'
+                });
+                $scope.status = 'Unable to insert usuario: ' + error.message;
+            });
+        }
+    }
 
 })
    
@@ -365,7 +418,8 @@ angular.module('app.controllers', [])
   $scope.consulta={};
   $scope.consulta.producto={};
   $scope.consulta.usuario={};
-  $scope.consulta.categoria={};
+  $scope.consulta.categoria={nombre:"KO", descripcion:"KO"};
+  $scope.categoriasSelected=[];
  
   $scope.selectUpdated = function(selected) {
       console.log('Updated'+selected);
@@ -374,19 +428,56 @@ angular.module('app.controllers', [])
       $scope.consulta.categoria=$scope.categoriaSelected;
   };
 
+   $scope.onValueChanged = function(value){
+    console.log(value); 
+    var cats=value.split("-");  
+    if(cats.length>0){
+      if(cats.length>1){
+          var alertPopup = $ionicPopup.alert({
+                title: 'Excede la cantidad de categor&iacute;as',
+                template: 'Por favor seleccione solo 1 categor&iacute;a!'
+              });
+      }else{
+        for(var i=0;i<cats.length;i++){
+          console.log("categoria:"+cats[i]);
+          for(var j=0; j<$scope.categorias.length;j++){
+                      var categoria=[];
+                      
+                      //categoria.selected=false;
+                      categoria.id=j;
+                      categoria.nombre=$scope.categorias[j].nombre;
+                      categoria.descripcion=$scope.categorias[j].descripcion;
+                      
+                      if(categoria.nombre===cats[i]){
+                        console.log("Se agrega la categoria:"+categoria.nombre);
+                        $scope.categoriasSelected.push(categoria);
+                      }
+                 }
+        }
+      }
+    }
+
+  }
+  //se cargan las categorias
   getCategorias();
 
+ 
+
    function getCategorias() {
-      console.log("Ctrl. getting categorias")
+    console.log("Ctrl. getting categorias")
       categoriaService.getCategorias()
           .success(function (categorias) {
-          for(var i=0; i<categorias.length;i++){
-              var categoria=[];                    
-              categoria.id=i;
-              categoria.nombre=categorias[i].nombre;
-              categoria.descripcion=categorias[i].descripcion;
-              $scope.categorias.push(categoria);                
-         }                
+        for(var i=0; i<categorias.length;i++){
+            var categoria=[];
+            
+            categoria.selected=false;
+            categoria.id=i;
+            categoria.nombre=categorias[i].nombre;
+            categoria.descripcion=categorias[i].descripcion;
+            $scope.categorias.push(categoria);
+        
+        }
+        $scope.data = categorias;
       })
       .error(function (error) {
           $scope.status = 'Unable to load customer data: ' + error.message;
@@ -395,17 +486,28 @@ angular.module('app.controllers', [])
 
 
     $scope.buscar = function (newSearchForm) {
-      console.log("realizando busqueda"); 
-      var consulta=$scope.consulta;
-      console.log("rprod"+consulta); 
-      $state.go('resultado', {consulta});
+      console.log("realizando busqueda"+$scope.consulta.categoria.nombre); 
+      if($scope.consulta.categoria.nombre == "KO"){
+        var alertPopup = $ionicPopup.alert({
+          title: 'Categor&iacute;a vacia',
+          template: 'Por favor seleccione categor&iacute;a!'
+        });
+        
+      }else{
+        var consulta=$scope.consulta;
+        console.log("rprod"+consulta); 
+        console.log("cat"+consulta.categoria.nombre);
+        $state.go('resultado', {consulta});
+      }
     }
+
+
   
 })
 .controller('resultadoCtrl', function($scope, $state, $stateParams, sharedConn, usuarioService, consultaService, proveedorService, MapService, ChatDetails){
     console.log('resultadoCtrl');
     $scope.consulta={};
-    $scope.consulta.categoria={};
+    
     $scope.consulta.producto=$stateParams.consulta.producto;
     $scope.consulta.usuario={};
     $scope.consulta.categoria=$stateParams.consulta.categoria;
@@ -474,12 +576,73 @@ angular.module('app.controllers', [])
       }); 
     }else{
       var x = new Date();
-      $scope.consulta.usuario.nombre="anonimo"+x.getTime();;
+      $scope.consulta.usuario.nombre="anonimo"+x.getTime();
       $scope.consulta.usuario.email="anonimo@anonimo";
       $scope.consulta.usuario.user="anonimo";
       $scope.consulta.usuario.password="anonimo";
       $scope.consulta.usuario.telefono="04838383";
     }
+
+    $scope.addLocationResponder= function(latitud, longitud, data){
+      var resultado;
+      var icon = {
+          url: "img/icon_response.png", // url
+          scaledSize: new google.maps.Size(30, 30), // scaled size
+          origin: new google.maps.Point(0,0), // origin
+          anchor: new google.maps.Point(0, 0) // anchor
+      };
+     
+      console.log("****************** agregando egistro:*************"+data.usuario);
+      MapService.createByCoords(latitud, longitud, data, function (marker) {
+           
+          var contentString = '<div>'+
+            '<label style="color: white;"><b>'+marker.nombre+'</b></label>'+
+            '<div class="spacer" style="height: 5px;"></div>'+
+              '<div><p style="color: white;font-size: x-small;">'+marker.mensaje+'</p></div>'+
+              '<div class="row">'+
+                '<a href="https://api.whatsapp.com/send?phone='+marker.telefono+'&text=Hola%20desde%20ajustadoati"><img src="img/icon_message.png" width="25" height="25"/></a>'+
+              '</div></div></div>';
+        if($scope.userActual==""){
+          var contentString = '<div>'+
+            '<label style="color: white;font-size: x-small;"><b>'+marker.nombre+'</b></label>'+
+            '<div class="spacer" style="height: 5px;"></div>'+
+              '<div><p style="color: white;">'+marker.mensaje+'</p></div>'+
+              '<div class="row">'+
+                '<a href="https://api.whatsapp.com/send?phone='+marker.telefono+'&text=Hola%20desde%20ajustadoati"><img src="img/icon_message.png" width="25" height="25"/></a>'+
+              '</div></div></div>';
+
+        }
+        var latLng = new google.maps.LatLng(marker.latitude, marker.longitude);
+        console.log("listeners");
+        var mark = new google.maps.Marker({
+            map: $scope.map,
+            icon: icon,
+            animation: google.maps.Animation.DROP,
+            position: latLng,
+             mensaje:marker.mensaje,
+            nombre:marker.nombre,
+            telefono:marker.telefono,
+            usuario:marker.usuario,
+        });     
+               
+        $scope.markers.push(mark);
+        console.log("size: "+$scope.markers.length);
+        var infoWindow = new google.maps.InfoWindow({
+            content: contentString
+        });
+       
+        google.maps.event.addListener(mark, 'click', function () {
+
+            infoWindow.open($scope.map, mark);
+        });
+        resultado = mark;
+            
+      });
+          
+           // $scope.map.markers.push(marker);
+            //refresh(marker);
+          return resultado;
+        }
 
     //metodo para agregar ubicacion de proveedores
     $scope.addLocation= function(latitud, longitud, data){
@@ -493,7 +656,7 @@ angular.module('app.controllers', [])
                   '<div class="row">'+
                     '<div class = "col-30" ><label style="color: white;"><b>'+marker.telefono+'</b></label></div>'+
                     '<div class = "col-20" ></div>'+
-                    '<div class = "col-50"><img src="img/icon_message.png" width="25" height="25"/><img src="img/icon_phone.png" width="25" height="25"></div>'+
+                    '<div class = "col-50"><a href="https://api.whatsapp.com/send?phone='+marker.telefono+'&text=Hola%20desde%20ajustadoati"><img src="img/icon_message.png" width="25" height="25"/></a><img src="img/icon_phone.png" width="25" height="25"></div>'+
                   '</div></div></div>';
         var latLng = new google.maps.LatLng(marker.latitude, marker.longitude);               
         
@@ -514,7 +677,7 @@ angular.module('app.controllers', [])
           usuario:marker.usuario,
         });                 
         $scope.markers.push(mark);
-        console.log("size: "+$scope.markers.length);
+        
         
         var infoWindow = new google.maps.InfoWindow({
           content: contentString
@@ -602,7 +765,6 @@ angular.module('app.controllers', [])
 
     //Se carga ubicacion
     MapService.createByCurrentLocation(function (marker) {
-        console.log("Llamando al service test");
         marker.options.labelContent = 'Usted esta aqu&iacute;';
         $scope.consulta.usuario.latitud=marker.latitude;
         $scope.consulta.usuario.longitud=marker.longitude;                
@@ -612,7 +774,8 @@ angular.module('app.controllers', [])
           center: latLng,
           zoom: 10,
           noClear: true,
-          mapTypeId: google.maps.MapTypeId.ROADMAP
+          mapTypeId: google.maps.MapTypeId.ROADMAP,
+          disableDefaultUI: true
         };     
         $scope.map = new google.maps.Map(document.getElementById("map"), mapOptions);
         var icon = {
@@ -664,7 +827,7 @@ angular.module('app.controllers', [])
 })
 
 .controller('busquedaCtrl', function($scope, categoriaService, consultaService, $cordovaGeolocation, MapService, sharedConn, $stateParams, ChatDetails, $ionicPopup, proveedorService, usuarioService) {
-  console.log("busquedaCtrl")
+  console.log("busquedaCtrl");
   $scope.categorias=[];
   $scope.categoriasSelected=[];
   $scope.latitud="";
@@ -672,16 +835,19 @@ angular.module('app.controllers', [])
   $scope.consulta={};
   $scope.consulta.producto={};
   $scope.consulta.usuario={};
-  $scope.consulta.categoria={};
   $scope.proveedores=[];
   $scope.map={};
   $scope.markers=[];
   $scope.mensaje=$stateParams.mensaje;
   $scope.consultaId="";
-  
-
-
   $scope.userActual="";
+  $scope.consulta.categoria={nombre:"KO", descripcion:"KO"};
+  $scope.categoriasSelected=[];
+ 
+  $scope.selectUpdated = function(selected) {
+    $scope.categoriaSelected=$scope.categorias[selected];
+    $scope.consulta.categoria=$scope.categoriaSelected;
+  };
 
   if(sharedConn.getConnectObj()!=null){
     console.log()
@@ -689,7 +855,6 @@ angular.module('app.controllers', [])
     console.log("consultando usuario: "+$scope.userActual);
     usuarioService.getUserByUser($scope.userActual)
                       .success(function (data) {
-        console.log("nombre:"+data.nombre);
         $scope.consulta.usuario = data;
     }).error(function(error) {
         $scope.status = 'Unable to get user: ' + error.message;
@@ -701,470 +866,411 @@ angular.module('app.controllers', [])
     $scope.consulta.usuario.user="anonimo";
     $scope.consulta.usuario.password="anonimo";
     $scope.consulta.usuario.telefono="04838383";
-    
-   //$scope.usuario.latitud=2.992929;
-   //$scope.usuario.longitud=55.992929;
   }
 
   $scope.borrar = function(){
-    console.log("resetting searching");
     $scope.consulta.producto.nombre="";
     $scope.consulta.producto.descripcion="";
     if($scope.markers.length > 0){
       for (var i=0;i<$scope.markers.length;i++) {
-       
-            $scope.markers[i].setMap(null);
-           
+        
+        if($scope.markers[i].nombre != 'local'){
+          $scope.markers[i].setMap(null);
+        }
       }
      $scope.markers=[];
-   }
-
+    }
   };
 
   var ws = new WebSocket('wss://ajustadoati.com:8443/ajustadoatiWS/openfire');
 
-    ws.onopen = function () {
-        console.log('open');
-        
-        //this.send('hello');         // transmit "hello" after connecting
-    };
+  ws.onopen = function () {
+    console.log('open');
+  };
 
-    ws.onmessage = function (event) {
-        console.log(event.data);   
-        console.log("receiving"+event.data);
-        var obj = JSON.parse(event.data);
+  ws.onmessage = function (event) {
+    console.log(event.data);   
+    console.log("receiving"+event.data);
+    var obj = JSON.parse(event.data);
 
-        console.log("receiving from: "+obj.user);
-        console.log("message: "+obj.message);
-        //var user=$scope.getUser(obj.user);
-        
-        //console.log("obteniendo usuario: "+user.nombre);
-        //$scope.addLocation(obj.latitud, obj.longitud); // will be "hello"
-        $scope.setMensajeProveedor(obj, obj.message);
-        //this.close();
-    };
+    console.log("receiving from: "+obj.user);
+    console.log("message: "+obj.message);
+    //var user=$scope.getUser(obj.user);
+    
+    //console.log("obteniendo usuario: "+user.nombre);
+    //$scope.addLocation(obj.latitud, obj.longitud); // will be "hello"
+    $scope.setMensajeProveedor(obj, obj.message);
+    //this.close();
+  };
 
-    ws.onerror = function () {
-        console.log('error occurred!');
-    };
+  ws.onerror = function () {
+    console.log('error occurred!');
+  };
 
-    ws.onclose = function (event) {
-        console.log('close code=' + event.code);
-    };
+  ws.onclose = function (event) {
+    console.log('close code=' + event.code);
+  };
     //se debe borrar el elemento cuando lo consigue
      //metodo que agrega el mensaje en el objeto proveedor cuando responde
-    $scope.setMensajeProveedor=function(usuario, mensaje){
-        var resultado = [];
-        console.log("size markers: "+$scope.markers.length);
-        for (var i=0;i<$scope.markers.length;i++) {
-          console.log("agregando mensaje a proveedor: "+usuario.user);
-          console.log("proveedor: "+$scope.markers[i].usuario);
-          if (usuario.user == $scope.markers[i].usuario) {
-              console.log("proveedor encontrado: "+$scope.markers[i].usuario);
-              resultado = $scope.markers[i];
-              resultado.mensaje=mensaje;
-              //almacena su id para borrar;
-              console.log("proveedor con mensaje nuevo: "+resultado.mensaje);
-              $scope.markers[i].mensaje=mensaje;
-              $scope.markers[i].setMap(null);
-              $scope.addLocationResponder(usuario.latitud, usuario.longitud, resultado);
-              return;
+  $scope.setMensajeProveedor=function(usuario, mensaje){
+    var resultado = [];
+    console.log("size markers: "+$scope.markers.length);
+    for (var i=0;i<$scope.markers.length;i++) {
+      console.log("agregando mensaje a proveedor: "+usuario.user);
+      console.log("proveedor: "+$scope.markers[i].usuario);
+      if (usuario.user == $scope.markers[i].usuario) {
+        console.log("proveedor encontrado: "+$scope.markers[i].usuario);
+        resultado = $scope.markers[i];
+        resultado.mensaje=mensaje;
+        //almacena su id para borrar;
+        console.log("proveedor con mensaje nuevo: "+resultado.mensaje);
+        $scope.markers[i].mensaje=mensaje;
+        $scope.markers[i].setMap(null);
+        $scope.addLocationResponder(usuario.latitud, usuario.longitud, resultado);
+        return;
 
-          }
-        }
-        
-        return resultado;
+      }
     }
-
-     $scope.addLocation= function(latitud, longitud, data){
-          var resultado;
-          console.log("****************** agregando registro:*************"+data.usuario);
-          MapService.createByCoords(latitud, longitud, data, function (marker) {
+    return resultado;
+  }
+  //add location for providers
+  $scope.addLocation= function(latitud, longitud, data){
+    var resultado;
+    console.log("****************** agregando registro:*************"+data.usuario);
+    MapService.createByCoords(latitud, longitud, data, function (marker) {
+      var contentString = '<div>'+
+            '<label style="color: white;"><b>'+marker.nombre+'</b></label>'+
+            '<div class="spacer" style="height: 10px;"></div>'+
+              '<div><label style="color: white;">M&oacute;vil</label></div>'+
+              '<div class="row">'+
+                '<div class = "col-30" ><label style="color: white;"><b>'+marker.telefono+'</b></label></div>'+
+                '<div class = "col-20" ></div>'+
+                '<div class = "col-50"><a href="https://api.whatsapp.com/send?phone='+marker.telefono+'&text=Hola%20desde%20ajustadoati"><img src="img/icon_message.png" width="25" height="25"/></a><img src="img/icon_phone.png" width="25" height="25"></div>'+
+              '</div></div></div>';
+      var icon = {
+        url: "img/icon_orange.png", // url
+        scaledSize: new google.maps.Size(30, 30), // scaled size
+        origin: new google.maps.Point(0,0), // origin
+        anchor: new google.maps.Point(0, 0) // anchor
+      };
+      var latLng = new google.maps.LatLng(marker.latitude, marker.longitude);
+      console.log("listeners");
+      var mark = new google.maps.Marker({
+        map: $scope.map,
+        icon:icon,
+        animation: google.maps.Animation.DROP,
+        position: latLng,
+         mensaje:marker.mensaje,
+        nombre:marker.nombre,
+        telefono:marker.telefono,
+        usuario:marker.usuario,
+      });      
            
-             var contentString = '<div id="content">'+
-              '<div id="siteNotice">'+
-              '</div>'+
-              '<center><h3 id="firstHeading">' +data.nombre+'</h3></center>'+
-              '<div id="bodyContent">'+
-              '<br><b>Tel&eacute;fono:</b> '+marker.telefono+
-              '<br><b>Usuario:</b>  '+ marker.usuario+
-              '<br><b>Mensaje:</b> '+marker.mensaje+
-              '</a></div>'+
-              '</div>';
-            var latLng = new google.maps.LatLng(marker.latitude, marker.longitude);
-
-           
-            
-               console.log("listeners");
-                  var mark = new google.maps.Marker({
-                    map: $scope.map,
-                    animation: google.maps.Animation.DROP,
-                    position: latLng,
-                     mensaje:marker.mensaje,
-                    nombre:marker.nombre,
-                    telefono:marker.telefono,
-                    usuario:marker.usuario,
-                });      
-               
-               $scope.markers.push(mark);
-               console.log("size: "+$scope.markers.length);
-                var infoWindow = new google.maps.InfoWindow({
-                    content: contentString
-                });
-               
-                google.maps.event.addListener(mark, 'click', function () {
-
-                    infoWindow.open($scope.map, mark);
-                });
-                resultado = mark;
-            
-          });
-          
-           // $scope.map.markers.push(marker);
-            //refresh(marker);
-          return resultado;
-        }
-
-        $scope.addLocationResponder= function(latitud, longitud, data){
-          var resultado;
-          var image = {
-            url: 'img/location_resp.png',
-            size: new google.maps.Size(20, 32),
-            origin: new google.maps.Point(0, 0),
-            anchor: new google.maps.Point(0, 32)
-          };
+      $scope.markers.push(mark);
+      console.log("size: "+$scope.markers.length);
+      var infoWindow = new google.maps.InfoWindow({
+          content: contentString
+      });
+     
+      google.maps.event.addListener(mark, 'click', function () {
+        infoWindow.open($scope.map, mark);
+      });
+      resultado = mark;
         
-          var shape = {
-            coords: [1, 1, 1, 20, 18, 20, 18, 1],
-            type: 'poly'
-          };
-          console.log("****************** agregando egistro:*************"+data.usuario);
-          MapService.createByCoords(latitud, longitud, data, function (marker) {
-           
-             var contentString = '<div id="content">'+
-              '<div id="siteNotice">'+
-              '</div>'+
-              '<center><h3 id="firstHeading">' +data.nombre+'</h3></center>'+
-              '<div id="bodyContent">'+
-              '<br><b>Tel&eacute;fono:</b> '+marker.telefono+
-              '<br><b>Usuario:</b>  '+ marker.usuario+
-              '<br><b>Mensaje:</b> <a href="#/homeVendedor/requests/'+marker.usuario+'">  '+marker.mensaje+
-              '</a></div>'+
-              '</div>';
-            if($scope.userActual==""){
-              contentString = '<div id="content">'+
-                '<div id="siteNotice">'+
-                '</div>'+
-                '<h1 id="firstHeading" class="firstHeading">Proveedor</h1>'+
-                '<div id="bodyContent">'+
-                '<p><b>Nombre:</b> ' +marker.nombre+
-                '<br><b>Tel&eacute;fono:</b> '+marker.telefono+
-                '<br><b>Usuario:</b>  '+ marker.usuario+
-                '<br><b>Mensaje:</b>  '+marker.mensaje+
-                '</div>'+
-                '</div>';
+    });
+     // $scope.map.markers.push(marker);
+      //refresh(marker);
+    return resultado;
+  }
+  //add location for provider that have answered 
+  $scope.addLocationResponder= function(latitud, longitud, data){
+    var resultado;
+    var icon = {
+      url: "img/icon_response.png", // url
+      scaledSize: new google.maps.Size(30, 30), // scaled size
+      origin: new google.maps.Point(0,0), // origin
+      anchor: new google.maps.Point(0, 0) // anchor
+    };
+    var shape = {
+      coords: [1, 1, 1, 20, 18, 20, 18, 1],
+      type: 'poly'
+    };
+    console.log("****************** agregando egistro:*************"+data.usuario);
+    MapService.createByCoords(latitud, longitud, data, function (marker) {
+     
+      var contentString = '<div>'+
+            '<label style="color: white;"><b>'+marker.nombre+'</b></label>'+
+            '<div class="spacer" style="height: 5px;"></div>'+
+              '<div><p style="color: white;font-size: x-small;">'+marker.mensaje+'</p></div>'+
+              '<div class="row">'+
+                '<a href="https://api.whatsapp.com/send?phone='+marker.telefono+'&text=Hola%20desde%20ajustadoati"><img src="img/icon_message.png" width="25" height="25"/></a>'+
+              '</div></div></div>';
+      if($scope.userActual==""){
+        var contentString = '<div>'+
+            '<label style="color: white;"><b>'+marker.nombre+'</b></label>'+
+            '<div class="spacer" style="height: 5px;"></div>'+
+              '<div><p style="color: white;font-size: x-small;">'+marker.mensaje+'</p></div>'+
+              '<div class="row">'+
+                '<a href="https://api.whatsapp.com/send?phone='+marker.telefono+'&text=Hola%20desde%20ajustadoati"><img src="img/icon_message.png" width="25" height="25"/></a>'+
+              '</div></div></div>';
 
-            }
-            var latLng = new google.maps.LatLng(marker.latitude, marker.longitude);
+      }
+      var latLng = new google.maps.LatLng(marker.latitude, marker.longitude);
+      console.log("listeners");
+      var mark = new google.maps.Marker({
+        map: $scope.map,
+        icon: icon,
+        shape: shape,
+        animation: google.maps.Animation.DROP,
+        position: latLng,
+         mensaje:marker.mensaje,
+        nombre:marker.nombre,
+        telefono:marker.telefono,
+        usuario:marker.usuario,
+      });      
+      $scope.markers.push(mark);
+      console.log("size: "+$scope.markers.length);
+      var infoWindow = new google.maps.InfoWindow({
+          content: contentString
+      });
+      google.maps.event.addListener(mark, 'click', function () {
+          infoWindow.open($scope.map, mark);
+      });
+      resultado = mark;
+      
+    });
+    return resultado;
+  }
 
-           
-            
-               console.log("listeners");
-                  var mark = new google.maps.Marker({
-                    map: $scope.map,
-                    icon: image,
-                    shape: shape,
-                    animation: google.maps.Animation.DROP,
-                    position: latLng,
-                     mensaje:marker.mensaje,
-                    nombre:marker.nombre,
-                    telefono:marker.telefono,
-                    usuario:marker.usuario,
-                });      
-               
-               $scope.markers.push(mark);
-               console.log("size: "+$scope.markers.length);
-                var infoWindow = new google.maps.InfoWindow({
-                    content: contentString
-                });
-               
-                google.maps.event.addListener(mark, 'click', function () {
-
-                    infoWindow.open($scope.map, mark);
-                });
-                resultado = mark;
-            
-          });
-          
-           // $scope.map.markers.push(marker);
-            //refresh(marker);
-          return resultado;
-        }
-
-        $scope.addLocationRequest= function(latitud, longitud, data){
-          var resultado;
-          var image = {
-            url: 'img/location_resp.png',
-            size: new google.maps.Size(20, 32),
-            origin: new google.maps.Point(0, 0),
-            anchor: new google.maps.Point(0, 32)
-          };
-        
-          var shape = {
-            coords: [1, 1, 1, 20, 18, 20, 18, 1],
-            type: 'poly'
-          };
-          console.log("****************** agregando registro:*************"+data.usuario);
-          MapService.createByCoords(latitud, longitud, data, function (marker) {
-           
-             var contentString = '<div id="content">'+
-              '<div id="siteNotice">'+
-              '</div>'+
-              '<h3 id="firstHeading">' +data.nombre+'</h3>'+
-              '<div id="bodyContent">'+
-              '<br><b>Tel&eacute;fono:</b> '+marker.telefono+
-              '<br><b>Usuario:</b>  '+ marker.usuario+
-              '<br><b>Mensaje:</b> <a href="#/homeVendedor/detalleChat">  '+marker.mensaje+
-              '</a></div>'+
-              '</div>';
-            var latLng = new google.maps.LatLng(marker.latitude, marker.longitude);
-
-           
-            
-               console.log("listeners");
-                  var mark = new google.maps.Marker({
-                    map: $scope.map,
-                    icon: image,
-                    shape: shape,
-                    animation: google.maps.Animation.DROP,
-                    position: latLng,
-                     mensaje:marker.mensaje,
-                    nombre:marker.nombre,
-                    telefono:marker.telefono,
-                    usuario:marker.usuario,
-                });      
-               
-               $scope.markers.push(mark);
-               console.log("size: "+$scope.markers.length);
-                var infoWindow = new google.maps.InfoWindow({
-                    content: contentString
-                });
-               
-                google.maps.event.addListener(mark, 'click', function () {
-
-                    infoWindow.open($scope.map, mark);
-                });
-                resultado = mark;
-            
-          });
-          
-           // $scope.map.markers.push(marker);
-            //refresh(marker);
-            $scope.mensaje = "";
-          return resultado;
-        }
+  $scope.addLocationRequest= function(latitud, longitud, data){
+    var resultado;
+    var image = {
+      url: 'img/location_resp.png',
+      size: new google.maps.Size(20, 32),
+      origin: new google.maps.Point(0, 0),
+      anchor: new google.maps.Point(0, 32)
+    };
+  
+    var shape = {
+      coords: [1, 1, 1, 20, 18, 20, 18, 1],
+      type: 'poly'
+    };
+    console.log("****************** agregando registro:*************"+data.usuario);
+    MapService.createByCoords(latitud, longitud, data, function (marker) {
+     
+      var contentString = '<div id="content">'+
+      '<div id="siteNotice">'+
+      '</div>'+
+      '<h3 id="firstHeading">' +data.nombre+'</h3>'+
+      '<div id="bodyContent">'+
+      '<br><b>Tel&eacute;fono:</b> '+marker.telefono+
+      '<br><b>Usuario:</b>  '+ marker.usuario+
+      '<br><b>Mensaje:</b> <a href="#/homeVendedor/detalleChat">  '+marker.mensaje+
+      '</a></div>'+
+      '</div>';
+      var latLng = new google.maps.LatLng(marker.latitude, marker.longitude);
+      console.log("listeners");
+        var mark = new google.maps.Marker({
+        map: $scope.map,
+        icon: image,
+        shape: shape,
+        animation: google.maps.Animation.DROP,
+        position: latLng,
+         mensaje:marker.mensaje,
+        nombre:marker.nombre,
+        telefono:marker.telefono,
+        usuario:marker.usuario,
+      });      
+       
+      $scope.markers.push(mark);
+      console.log("size: "+$scope.markers.length);
+      var infoWindow = new google.maps.InfoWindow({
+        content: contentString
+      });
+     
+      google.maps.event.addListener(mark, 'click', function () {
+        infoWindow.open($scope.map, mark);
+      });
+      resultado = mark;
+      
+    });
+    
+    $scope.mensaje = "";
+    return resultado;
+  }
 
      
 
-      MapService.createByCurrentLocation(function (marker) {
-                console.log("Llamando al service test");
-                marker.options.labelContent = 'Usted esta aqu&iacute;';
-                $scope.consulta.usuario.latitud=marker.latitude;
-                $scope.consulta.usuario.longitud=marker.longitude;
+  MapService.createByCurrentLocation(function (marker) {
+    console.log("Llamando al service test");
+    marker.options.labelContent = 'Usted esta aqu&iacute;';
+    $scope.consulta.usuario.latitud=marker.latitude;
+    $scope.consulta.usuario.longitud=marker.longitude;
+    //refresh(marker
+    var latLng = new google.maps.LatLng($scope.consulta.usuario.latitud, $scope.consulta.usuario.longitud);
 
-                
-                //refresh(marker
-                var latLng = new google.maps.LatLng($scope.consulta.usuario.latitud, $scope.consulta.usuario.longitud);
- 
-              var mapOptions = {
-                center: latLng,
-                zoom: 13,
-                mapTypeId: google.maps.MapTypeId.ROADMAP
-              };
+    var mapOptions = {
+      center: latLng,
+      zoom: 13,
+      mapTypeId: google.maps.MapTypeId.ROADMAP,
+      disableDefaultUI: true
+    };
+
+     var icon = {
+      url: "img/icon_orange.png", // url
+      scaledSize: new google.maps.Size(30, 30), // scaled size
+      origin: new google.maps.Point(0,0), // origin
+      anchor: new google.maps.Point(0, 0) // anchor
+    };
            
-              $scope.map = new google.maps.Map(document.getElementById("map"), mapOptions);
-              google.maps.event.addListenerOnce($scope.map, 'idle', function(){
-           
-                var mark = new google.maps.Marker({
-                  map: $scope.map,
-                  animation: google.maps.Animation.DROP,
-                  position: latLng,
-                  mensaje:"mensaje",
-                  nombre:"usuario-ajustado",
-                  telefono:"555-555",
-                  usuario:"usuario-ajustado",
-                });      
-                $scope.markers.push(mark);
-             console.log("size: "+$scope.markers.length);
-             var contentString = '<div id="content">'+
-                '<div id="siteNotice">'+
-                '</div>'+
-                '<h3 id="firstHeading">Proveedor</h3>'+
-                '<div id="bodyContent">'+
-                '<p><b>Nombre:</b> ' +mark.nombre+
-                '<br><b>Tel&eacute;fono:</b> '+mark.telefono+
-                '<br><b>Usuario:</b>  '+ mark.usuario+
-                '<br><b>Mensaje:</b>  '+mark.mensaje+
-                '</div>'+
-                '</div>';
-              var infoWindow = new google.maps.InfoWindow({
-                  content:"Usted esta aqu&iacute; !"
-              });
-             
-            google.maps.event.addListener(mark, 'click', function () {
-                infoWindow.open($scope.map, mark);
-            });
-          });
-          if($scope.mensaje != "" && $scope.mensaje != null){
-            var data = {
-              nombre: "Cliente",
-              telefono:"5555",
-              mensaje:$scope.mensaje.text,
-              usuario:$scope.mensaje.user
-            };
-            ChatDetailsObj.setTo($scope.mensaje.user+"@ajustadoati.com");
-            //$scope.addLocationRequest($scope.mensaje.latitud, $scope.mensaje.longitud, data);
+    $scope.map = new google.maps.Map(document.getElementById("map"), mapOptions);
+    google.maps.event.addListenerOnce($scope.map, 'idle', function(){
+    var mark = new google.maps.Marker({
+      map: $scope.map,
+      icon: icon,
+      animation: google.maps.Animation.DROP,
+      position: latLng,
+      mensaje:"mensaje",
+      nombre:"local",
+      telefono:"555-555",
+      usuario:"usuario-ajustado",
+    });      
+      $scope.markers.push(mark);
+      console.log("size: "+$scope.markers.length);
+       var contentString = '<div id="content">'+
+          '<div id="siteNotice">'+
+          '</div>'+
+          '<h3 id="firstHeading">Proveedor</h3>'+
+          '<div id="bodyContent">'+
+          '<p><b>Nombre:</b> ' +mark.nombre+
+          '<br><b>Tel&eacute;fono:</b> '+mark.telefono+
+          '<br><b>Usuario:</b>  '+ mark.usuario+
+          '<br><b>Mensaje:</b>  '+mark.mensaje+
+          '</div>'+
+          '</div>';
+      var infoWindow = new google.maps.InfoWindow({
+          content:"Usted esta aqu&iacute; !"
+      });
+       
+      google.maps.event.addListener(mark, 'click', function () {
+          infoWindow.open($scope.map, mark);
+      });
+    });
+    if($scope.mensaje != "" && $scope.mensaje != null){
+      var data = {
+        nombre: "Cliente",
+        telefono:"5555",
+        mensaje:$scope.mensaje.text,
+        usuario:$scope.mensaje.user
+      };
+      ChatDetailsObj.setTo($scope.mensaje.user+"@ajustadoati.com");
+      //$scope.addLocationRequest($scope.mensaje.latitud, $scope.mensaje.longitud, data);
+    }
+  });
+
+  //load categories
+  getCategorias();
+  function getCategorias() {
+  console.log("Ctrl. getting categorias")
+  categoriaService.getCategorias()
+    .success(function (categorias) {
+      for(var i=0; i<categorias.length;i++){
+        var categoria=[];
+        
+        categoria.selected=false;
+        categoria.id=i;
+        categoria.nombre=categorias[i].nombre;
+        categoria.descripcion=categorias[i].descripcion;
+        $scope.categorias.push(categoria);
+      }
+      $scope.data = categorias;
+    })
+    .error(function (error) {
+      $scope.status = 'Unable to load customer data: ' + error.message;
+    });
+  }
+  //method to search products
+  $scope.buscar = function (newSearchForm) {
+    console.log("realizando busqueda"+$scope.consulta.categoria.nombre);
+    if($scope.consulta.categoria.nombre == "KO"){
+      var alertPopup = $ionicPopup.alert({
+        title: 'Categor&iacute;a vacia',
+        template: 'Por favor seleccione categor&iacute;a!'
+      }); 
+    }
+    $scope.consulta.producto.descripcion=$scope.consulta.producto.nombre;
+    $scope.consulta.producto.id=0;
+    var categoria={};
+    categoria.id=$scope.consulta.categoria.id;
+    categoria.nombre=$scope.consulta.categoria.nombre;
+    categoria.descripcion=$scope.consulta.categoria.descripcion;
+    $scope.consulta.categoria=categoria;
+    /*for(var i=0; i<$scope.categoriasSelected.length;i++){
+      console.log("categorias:"+$scope.categoriasSelected[i].nombre);
+      var categoria={};
+      categoria.id=i;
+      categoria.nombre=$scope.categoriasSelected[i].nombre;
+      categoria.descripcion=$scope.categoriasSelected[i].descripcion;
+      $scope.consulta.categoria=categoria;
+    }*/
+    var resp="";
+    var men="";
+    men=$scope.consulta.producto.nombre;
+    //se obtienen los proveedores de la categoria
+    proveedorService.getProveedoresByCategoria($scope.consulta.categoria.nombre)
+    .success(function (data) {
+      console.log('Consultando proveedores.'+$scope.consulta.categoria);
+      $scope.proveedores=data;
+
+    }).error(function(error) {
+        $scope.status = 'Unable to get proveedores: ' + error.message;
+    }); 
+    consultaService.saveConsulta($scope.consulta)
+    .success(function (data) {
+      console.log('Saved Consulta.'+data);
+      console.log('response:'+data.id);
+      $scope.consultaId=data.id;
+      $scope.latitud = $scope.consulta.usuario.latitud;
+      $scope.longitud = $scope.consulta.usuario.longitud;
+      
+      $scope.categoriasSelected=[];
+
+    }).
+    error(function(error) {
+        $scope.status = 'Unable to insert consulta: ' + error.message;
+    }).finally(function(data){
+      console.log("size"+$scope.proveedores.length);
+      for(var i=0; i<$scope.proveedores.length; i++){
+        console.log("proveedor: "+$scope.proveedores[i].usuario.user);
+        
+        var usuario = {
+          mensaje:"Sin mensaje",
+          nombre:$scope.proveedores[i].usuario.nombre,
+          telefono:$scope.proveedores[i].usuario.telefono,
+          usuario:$scope.proveedores[i].usuario.user,
+          id: 0         
+        };
+
+        $scope.addLocation($scope.proveedores[i].usuario.latitud, $scope.proveedores[i].usuario.longitud, usuario)
+        if($scope.userActual != $scope.proveedores[i].usuario.user){
+          if($scope.proveedores.length==(i+1)){
+            console.log("fin de ciclo");
+              resp=resp+$scope.proveedores[i].usuario.user;
+          }else{
+            console.log("sigue el ciclo");
+              resp=resp+$scope.proveedores[i].usuario.user+"&&";
           }
-     });
-
-  $scope.onValueChanged = function(value){
-    console.log(value); 
-    var cats=value.split("-");  
-    if(cats.length>0){
-      if(cats.length>1){
-          var alertPopup = $ionicPopup.alert({
-                title: 'Excede la cantidad de categor&iacute;as',
-                template: 'Por favor seleccione solo 1 categor&iacute;a!'
-              });
-      }else{
-        for(var i=0;i<cats.length;i++){
-          console.log("categoria:"+cats[i]);
-          for(var j=0; j<$scope.categorias.length;j++){
-                      var categoria=[];
-                      
-                      //categoria.selected=false;
-                      categoria.id=j;
-                      categoria.nombre=$scope.categorias[j].nombre;
-                      categoria.descripcion=$scope.categorias[j].descripcion;
-                      
-                      if(categoria.nombre===cats[i]){
-                        console.log("Se agrega la categoria:"+categoria.nombre);
-                        $scope.categoriasSelected.push(categoria);
-                      }
-                 }
+        }else {
+          console.log("usuario que envia la consulta");
         }
       }
-    }
-
+      console.log("resp"+resp);
+      console.log("data a proveedores");
+      var msg = '{"id":'+$scope.consultaId+', "mensaje":"' + men + '", "users":"'+resp+'","latitud":"'+$scope.latitud+'","longitud":"'+$scope.longitud+'"}';
+      console.log("msj:"+msg);
+      ws.send(msg);     
+    });
   }
-
-  getCategorias();
-
- 
-
-   function getCategorias() {
-    console.log("Ctrl. getting categorias")
-        categoriaService.getCategorias()
-            .success(function (categorias) {
-                for(var i=0; i<categorias.length;i++){
-                    var categoria=[];
-                    
-                    categoria.selected=false;
-                    categoria.id=i;
-                    categoria.nombre=categorias[i].nombre;
-                    categoria.descripcion=categorias[i].descripcion;
-                    $scope.categorias.push(categoria);
-                
-               }
-                $scope.data = categorias;
-            })
-            .error(function (error) {
-                $scope.status = 'Unable to load customer data: ' + error.message;
-            });
-    }
-
-    $scope.buscar = function (newSearchForm) {
-      console.log("realizando busqueda");
-                
-               
-                $scope.consulta.producto.descripcion=$scope.consulta.producto.nombre;
-                $scope.consulta.producto.id=0;
-
-               for(var i=0; i<$scope.categoriasSelected.length;i++){
-                  console.log("categorias:"+$scope.categoriasSelected[i].nombre);
-                  var categoria={};
-                  categoria.id=i;
-                  categoria.nombre=$scope.categoriasSelected[i].nombre;
-                  categoria.descripcion=$scope.categoriasSelected[i].descripcion;
-                  $scope.consulta.categoria=categoria;
-              }
-             
-               var resp="";
-               var men="";
-               men=$scope.consulta.producto.nombre;
-            //se obtienen los proveedores de la categoria
-            proveedorService.getProveedoresByCategoria($scope.consulta.categoria.nombre)
-              .success(function (data) {
-              console.log('Consultando proveedores.'+$scope.consulta.categoria);
-              $scope.proveedores=data;
-
-            }).error(function(error) {
-                  $scope.status = 'Unable to get proveedores: ' + error.message;
-              }); 
-            consultaService.saveConsulta($scope.consulta)
-              .success(function (data) {
-                  console.log('Saved Consulta.'+data);
-                  console.log('response:'+data.id);
-                  $scope.consultaId=data.id;
-                  $scope.latitud = $scope.consulta.usuario.latitud;
-                  $scope.longitud = $scope.consulta.usuario.longitud;
-                  
-                  $scope.categoriasSelected=[];
-
-              }).
-              error(function(error) {
-                  $scope.status = 'Unable to insert consulta: ' + error.message;
-              }).finally(function(data){
-                
-                  console.log("size"+$scope.proveedores.length);
-                      for(var i=0; i<$scope.proveedores.length; i++){
-                          console.log("proveedor: "+$scope.proveedores[i].usuario.user);
-                          
-                          var usuario = {
-                              mensaje:"Sin mensaje",
-                              nombre:$scope.proveedores[i].usuario.nombre,
-                              telefono:$scope.proveedores[i].usuario.telefono,
-                              usuario:$scope.proveedores[i].usuario.user,
-                              id: 0         
-                          };
-
-                          $scope.addLocation($scope.proveedores[i].usuario.latitud, $scope.proveedores[i].usuario.longitud, usuario)
-                          if($scope.userActual != $scope.proveedores[i].usuario.user){
-                            if($scope.proveedores.length==(i+1)){
-                              console.log("fin de ciclo");
-                                resp=resp+$scope.proveedores[i].usuario.user;
-                            }else{
-                              console.log("sigue el ciclo");
-                                resp=resp+$scope.proveedores[i].usuario.user+"&&";
-                            }
-                          }else {
-                            console.log("usuario que envia la consulta");
-                          }
-                          
-                        }
-                        console.log("resp"+resp);
-                        console.log("data a proveedores");
-                        //$scope.sendData();
-
-                        var msg = '{"id":'+$scope.consultaId+', "mensaje":"' + men + '", "users":"'+resp+'","latitud":"'+$scope.latitud+'","longitud":"'+$scope.longitud+'"}';
-                        console.log("msj:"+msg);
-                        ws.send(msg);
-
-                        
-                    });
-      }
-
-    
 })
 
 .controller('peticionDetalleCtrl', function($scope, categoriaService, consultaService, $cordovaGeolocation, MapService, $stateParams, sharedConn, $ionicScrollDelegate, $ionicPopup, $state) {
@@ -1188,88 +1294,87 @@ angular.module('app.controllers', [])
   var mapOptions = {
     center: latLng,
     zoom: 13,
-    mapTypeId: google.maps.MapTypeId.ROADMAP
+    mapTypeId: google.maps.MapTypeId.ROADMAP,
+    disableDefaultUI: true
   };
   $scope.map = new google.maps.Map(document.getElementById("mapRequest"), mapOptions);
 
 
-     $scope.addLocation= function(latitud, longitud){
-          var resultado;
+  $scope.addLocation= function(latitud, longitud){
+    var resultado;
 
-            var image = {
-            url: 'img/location_resp.png',
-            size: new google.maps.Size(20, 32),
-            origin: new google.maps.Point(0, 0),
-            anchor: new google.maps.Point(0, 32)
-          };
-        
-          var shape = {
-            coords: [1, 1, 1, 20, 18, 20, 18, 1],
-            type: 'poly'
-          };
-          var data = {
-             nombre: "Cliente",
-            telefono:"5555",
-            mensaje:$scope.peticion.text,
-            usuario:$scope.peticion.user
-          };
-          console.log("****************** agregando registro:*************"+data.usuario);
-          MapService.createByCoords(latitud, longitud, data, function (marker) {
-            console.log("PeticionCtrl-- en el createcoords"+marker.latitude);
-             var contentString = '<div id="content">'+
-              '<div id="siteNotice">'+
-              '</div>'+
-              '<h1 id="firstHeading" class="firstHeading">' +data.nombre+'</h1>'+
-              '<div id="bodyContent">'+
-              '<br><b>Tel&eacute;fono:</b> '+marker.telefono+
-              '<br><b>Usuario:</b>  '+ marker.usuario+
-              '<br><b>Mensaje:</b> '+marker.mensaje+
-              '</a></div>'+
-              '</div>';
-              var latLng = new google.maps.LatLng(marker.latitude, marker.longitude);
- 
-              var mapOptions = {
-                center: latLng,
-                zoom: 13,
-                mapTypeId: google.maps.MapTypeId.ROADMAP
-              };
-              //$scope.map = new google.maps.Map(document.getElementById("map"), mapOptions);
-            //var latLng = new google.maps.LatLng(marker.latitude, marker.longitude);
+    var icon = {
+      url: "img/icon_orange.png", // url
+      scaledSize: new google.maps.Size(30, 30), // scaled size
+      origin: new google.maps.Point(0,0), // origin
+      anchor: new google.maps.Point(0, 0) // anchor
+    };
+  
+    var shape = {
+      coords: [1, 1, 1, 20, 18, 20, 18, 1],
+      type: 'poly'
+    };
+    var data = {
+       nombre: "Cliente",
+      telefono:"5555",
+      mensaje:$scope.peticion.text,
+      usuario:$scope.peticion.user
+    };
+    
+    MapService.createByCoords(latitud, longitud, data, function (marker) {
+      console.log("PeticionCtrl-- en el createcoords"+marker.latitude);
+       var contentString = '<div id="content">'+
+        '<div id="siteNotice">'+
+        '<h5 style="color: white;">Ubicaci&oacute;n cliente</h5>'+
+        '</div>'+
+        '<div id="bodyContent">'+
+        '</div>'+
+        '</div>';
+        var latLng = new google.maps.LatLng(marker.latitude, marker.longitude);
 
-           
-            
-               console.log("listeners");
-                 var mark = new google.maps.Marker({
-                    map: $scope.map,
-                    icon: image,
-                    shape: shape,
-                    animation: google.maps.Animation.DROP,
-                    position: latLng,
-                     mensaje:marker.mensaje,
-                    nombre:marker.nombre,
-                    telefono:marker.telefono,
-                    usuario:marker.usuario,
-                }); 
-                    
-               
-               $scope.markers.push(mark);
-               console.log("size: "+$scope.markers.length);
-                var infoWindow = new google.maps.InfoWindow({
-                    content: contentString
-                });
-               
-                google.maps.event.addListener(mark, 'click', function () {
+        var mapOptions = {
+          center: latLng,
+          zoom: 13,
+          mapTypeId: google.maps.MapTypeId.ROADMAP,
+          disableDefaultUI: true
+        };
+        //$scope.map = new google.maps.Map(document.getElementById("map"), mapOptions);
+      //var latLng = new google.maps.LatLng(marker.latitude, marker.longitude);
 
-                    infoWindow.open($scope.map, mark);
-                });
-                resultado = mark;
-            
+     
+      
+         console.log("listeners");
+           var mark = new google.maps.Marker({
+              map: $scope.map,
+              icon: icon,
+              shape: shape,
+              animation: google.maps.Animation.DROP,
+              position: latLng,
+               mensaje:marker.mensaje,
+              nombre:marker.nombre,
+              telefono:marker.telefono,
+              usuario:marker.usuario,
+          }); 
+              
+         
+         $scope.markers.push(mark);
+         console.log("size: "+$scope.markers.length);
+          var infoWindow = new google.maps.InfoWindow({
+              content: contentString
           });
-          
-           // $scope.map.markers.push(marker);
-            //refresh(marker);
-          return resultado;
-        }
+         
+          google.maps.event.addListener(mark, 'click', function () {
+
+              infoWindow.open($scope.map, mark);
+          });
+          resultado = mark;
+      
+    });
+    
+     // $scope.map.markers.push(marker);
+      //refresh(marker);
+    return resultado;
+  }
 
         
         $scope.addLocation($scope.peticion.latitud, $scope.peticion.longitud);
@@ -1434,12 +1539,6 @@ angular.module('app.controllers', [])
         });
     };
 
-
-
-
-  
-
-
 })
 
 .controller('peticionCtrl', function($scope, $state, usuarioService, $ionicPopup, $rootScope, Peticiones) {
@@ -1455,7 +1554,7 @@ angular.module('app.controllers', [])
     console.log("peticion id:"+peticion.longitud);
     console.log("peticion id:"+peticion.text);
     console.log("peticion id:"+peticion.user);
-    $state.go('tabsController.peticionDetalle', {peticion}, {location: "replace", reload: true});
+    $state.go('tabsController.peticionDetalle', {peticion});
   }
   
   $scope.add = function(add_jid){

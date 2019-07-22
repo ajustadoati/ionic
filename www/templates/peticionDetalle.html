@@ -1,11 +1,12 @@
 <ion-view title="Pedido">
     <ion-content overflow-scroll="true" padding="true" scroll="true" class="has-header">
-        <div id="mapRequest" data-tap-disabled="true"></div>
+    <div id="mapRequest" data-tap-disabled="true"></div>
+    <div>
         <form class="list" name="newSearchForm">
             
             <ion-list>
                 <label class="item item-input">
-                    <span class="input-label">Producto</span>
+                    <span class="input-label">Producto:</span>
                     <input type="text" ng-model="peticion.text" placeholder="">
                 </label>
                 
@@ -14,13 +15,14 @@
            
             
         </form>
+    </div>
     </ion-content>
     <ion-footer-bar keyboard-attach class="bar-stable item-input-inset">
-    <label class="item-input-wrapper">
-      <input type="text" placeholder="Tu respuesta" on-return="showSendMessage(); closeKeyboard()" ng-model="response" on-focus="inputUp()" on-blur="inputDown()" />
-    </label>
-    <button class="button button-clear" ng-click="showSendMessage()">
-        Enviar
-    </button>
+        <label class="item-input-wrapper">
+          <input type="text" placeholder="Tu respuesta" on-return="showSendMessage(); closeKeyboard()" ng-model="response" on-focus="inputUp()" on-blur="inputDown()" />
+        </label>
+        <button class="button button-clear" ng-click="showSendMessage()" style="color:white;">
+            Enviar
+        </button>
   </ion-footer-bar>
 </ion-view>
