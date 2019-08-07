@@ -21,6 +21,11 @@ angular.module('app.services', [])
         return $http.post(url+"login/", usuarioLogin);
     };
 
+    usuarioService.getUserByUserAndEmail = function (usuarioEmail) {
+        console.log("Service: getting User");
+        return $http.get(url+usuarioEmail.user+"/email/"+usuarioEmail.email);
+    };
+
     usuarioService.getUserByUser = function (user) {
         console.log("Service: getting User:"+user);
         return $http.get(url+user);
@@ -119,23 +124,17 @@ return proveedorService;
   var consultaService ={};
 
   consultaService.saveConsulta = function (consulta) {
-        console.log("Service: Guardando consulta");
-        console.log("saveConsulta..."+consulta.categoria.nombre);
-        console.log("saveConsulta..."+consulta.categoria.descripcion);
-        console.log("saveConsulta..."+consulta.usuario.user);
-        console.log("saveConsulta..."+consulta.usuario.telefono);
-
         var cons={
             "producto":consulta.producto,
             "categoria":{nombre:consulta.categoria.nombre, descripcion:consulta.categoria.descripcion},
             "usuario":consulta.usuario
         };
-        console.log("saveConsulta... categoria: "+cons.categoria.nombre);
+        
         return $http.post(url, consulta);
     };
 
     consultaService.getConsultaByUser = function (user) {
-        console.log("Service: Buscando consultas"+user);
+        
         return $http.get(url+user);
     };
 
@@ -164,8 +163,6 @@ console.log("Service: Getting gategorias")
     var markerId = 0;
 
     function create(latitude, longitude, data) {
-        console.log("creando ubicacion"+latitude);
-        console.log("creando ubicacion"+longitude);
         console.log("creando ubicacion"+data);
         var marker = {
             options: {
@@ -214,12 +211,11 @@ console.log("Service: Getting gategorias")
 
     function createByCoords(latitude, longitude, data, successCallback) {
         console.log("createbycoords: "+latitude);
-        console.log("createbycoords: "+longitude);
-        console.log("createbycoords: "+data);
+
         var marker = create(latitude, longitude, data);
-        console.log("createbycoords: "+marker);
+
         invokeSuccessCallback(successCallback, marker);
-        console.log("createbycoords after: "+marker.latitude);
+ 
     }
 
     function createByAddress(address, successCallback) {
@@ -272,8 +268,6 @@ console.log("Service: Getting gategorias")
 
 })
 
-
-
 .service('BlankService', [function(){
 
 }])
@@ -298,7 +292,6 @@ console.log("Service: Getting gategorias")
         PeticionObj.peticiones=[];
     }
 
-
     loadConsultasByUser = function(user) {
         consultaService.getConsultaByUser(user).success(function (data) {
             
@@ -318,7 +311,8 @@ console.log("Service: Getting gategorias")
                     longitud:data[i].usuario.longitud,
                     time: d
                   };
-                  PeticionObj.peticiones.push(peticion);
+                  if(us != user)
+                    PeticionObj.peticiones.push(peticion);
           }
         });
     }
@@ -556,7 +550,7 @@ $ionicPopup for making Responsive Popups
     //--------------------------------------***END HELPER FUNCTIONS***----------------------------------------------------------
     //Login Function
     SharedConnObj.login=function (jid,host,pass) { 
-        console.log("jid"+jid);
+        console.log("jid"+pass);
         //console.log("pass"+pass);  
         //Strophe syntax
         // We are creating Strophe connection Object

@@ -6,7 +6,7 @@
                 <img src="img/header_left.png" width="150" height="150"></img>
                 
         </div>
-        <form class="list" name="loginForm">
+        <form class="list" name="usuarioEmailForm">
             <div style="line-height: 0px; border: 0px solid rgb(238, 238, 238); border-radius: 3px; text-align: center; width: 100%; height: auto; background-color: rgb(255, 255, 255);">
                  <div class="spacer" style="height: 30px;"></div>
                 <img src="img/logo_ajustado.png" width="200" height="40"></img>
@@ -25,14 +25,14 @@
                   <div style="background: url('img/user.png'); background-size: 270px 45px; margin: 0 auto; text-align: center; width: 270px; height: 45px;">
                     <label class="item_login item-input">
                     
-                        <input type="text" size="10" ng-model="usuarioLogin.user"  placeholder="Usuario">
+                        <input type="text" size="10" ng-model="usuarioEmail.user"  placeholder="Usuario">
                     </label>
                   </div>
                  <div class="spacer" style="height: 15px;"></div>
                   <div style="background: url('img/pass.png'); background-size: 270px 45px; margin: 0 auto; text-align: center; width: 270px; height: 45px;">
                     <label class="item_login item-input">
                     
-                        <input type="password" size="30" ng-model="usuarioLogin.password"  placeholder="Clave">
+                        <input type="Email" size="30" ng-model="usuarioEmail.email"  placeholder="Clave">
                     </label>
                   </div>
                 
@@ -44,8 +44,8 @@
             <div align="left" style="line-height: 0px; border: 0px solid rgb(238, 238, 238); border-radius: 3px; text-align: center; width: 100%; height: auto; background-color: rgb(255, 255, 255);">
                 
                  <div class="spacer" style="height: 30px;"></div>
-                <img src="img/button_entrar_es.png" width="150" height="60" ng-click="loginUsuario(loginForm);"></img>
-                <div class="spacer" style="height: 30px;"><p><a href="#/usuarioEmail">recuperar?</a></p></div>    
+                <img src="img/button_entrar_es.png" width="150" height="60" ng-click="findUsuarioEmail(usuarioEmailForm);"></img>
+                
             </div>
             
             <div align="left" style="line-height: 0px; border: 0px solid rgb(238, 238, 238); border-radius: 3px; text-align:left; width: 100%; height:auto; background-color: rgb(255, 255, 255);">

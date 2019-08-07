@@ -16,6 +16,12 @@ angular.module('app.routes', [])
       controller: 'loginCtrl'
     })
 
+    .state('usuarioEmail', {
+      url: '/usuarioEmail',
+      templateUrl: 'templates/usuario_email.html',
+      controller: 'usuarioEmailCtrl'
+    })
+
     .state('registro', {
       url: '/homeRegister',
       templateUrl: 'templates/registro.html',

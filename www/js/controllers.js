@@ -14,8 +14,8 @@ angular.module('app.controllers', [])
 
   $scope.loginUsuario = function (newUsuarioForm) {
      console.debug("login user");
-     var user = $scope.usuarioLogin.password.toLowerCase();
-     var password = $scope.usuarioLogin.user.toLowerCase();
+     var user = $scope.usuarioLogin.user.toLowerCase();
+     var password = $scope.usuarioLogin.password.toLowerCase();
 
          //uuu
           sharedConn.login(user,XMPP_DOMAIN,password);
@@ -44,6 +44,48 @@ angular.module('app.controllers', [])
         error(function(error) {
             $scope.status = 'Unable to get user: ' + error.message;
         });*/
+  }
+ 
+
+
+})
+
+.controller('usuarioEmailCtrl', function($scope, usuarioService, $state, $ionicPopup) {
+  console.log("UsuarioEmail Ctrl");
+  $scope.usuarioLogin={};
+
+  $scope.findUserEmail = function (usuarioEmailForm) {
+     console.debug("search user");
+     var user = $scope.usuarioEmail.user.toLowerCase();
+     var email = $scope.usuarioEmail.email.toLowerCase();
+
+         //uuu
+          
+           
+      usuarioService.getUserByUserAndLogin($scope.usuarioEmail)
+        .success(function (data) {
+
+            console.log('Saved User '+data.status);
+            $scope.usuarioLogin={};
+            if(!(data.status != null && data.status != undefined)){
+             console.log('User exist '+data.user);
+               //Calling the login function in sharedConn  
+            
+              //$state.go("tabsController.solicitudes");
+              
+            }else{
+              var alertPopup = $ionicPopup.alert({
+                title: 'Usuario o password incorrectos',
+                template: 'Por favor intenta de nuevo!'
+              });
+            }
+            
+            
+
+        }).
+        error(function(error) {
+            $scope.status = 'Unable to get user: ' + error.message;
+        });
   }
  
 
@@ -850,7 +892,6 @@ angular.module('app.controllers', [])
   };
 
   if(sharedConn.getConnectObj()!=null){
-    console.log()
     $scope.userActual=sharedConn.getConnectObj().jid.split("@")[0];
     console.log("consultando usuario: "+$scope.userActual);
     usuarioService.getUserByUser($scope.userActual)
@@ -1111,13 +1152,13 @@ angular.module('app.controllers', [])
 
     var mapOptions = {
       center: latLng,
-      zoom: 13,
+      zoom: 11,
       mapTypeId: google.maps.MapTypeId.ROADMAP,
       disableDefaultUI: true
     };
 
      var icon = {
-      url: "img/icon_orange.png", // url
+      url: "img/icon_green.png", // url
       scaledSize: new google.maps.Size(30, 30), // scaled size
       origin: new google.maps.Point(0,0), // origin
       anchor: new google.maps.Point(0, 0) // anchor
@@ -1171,23 +1212,23 @@ angular.module('app.controllers', [])
   //load categories
   getCategorias();
   function getCategorias() {
-  console.log("Ctrl. getting categorias")
-  categoriaService.getCategorias()
-    .success(function (categorias) {
-      for(var i=0; i<categorias.length;i++){
-        var categoria=[];
-        
-        categoria.selected=false;
-        categoria.id=i;
-        categoria.nombre=categorias[i].nombre;
-        categoria.descripcion=categorias[i].descripcion;
-        $scope.categorias.push(categoria);
-      }
-      $scope.data = categorias;
-    })
-    .error(function (error) {
-      $scope.status = 'Unable to load customer data: ' + error.message;
-    });
+    console.log("Ctrl. getting categorias")
+    categoriaService.getCategorias()
+      .success(function (categorias) {
+        for(var i=0; i<categorias.length;i++){
+          var categoria=[];
+          
+          categoria.selected=false;
+          categoria.id=i;
+          categoria.nombre=categorias[i].nombre;
+          categoria.descripcion=categorias[i].descripcion;
+          $scope.categorias.push(categoria);
+        }
+        $scope.data = categorias;
+      })
+      .error(function (error) {
+        $scope.status = 'Unable to load customer data: ' + error.message;
+      });
   }
   //method to search products
   $scope.buscar = function (newSearchForm) {
@@ -1205,14 +1246,6 @@ angular.module('app.controllers', [])
     categoria.nombre=$scope.consulta.categoria.nombre;
     categoria.descripcion=$scope.consulta.categoria.descripcion;
     $scope.consulta.categoria=categoria;
-    /*for(var i=0; i<$scope.categoriasSelected.length;i++){
-      console.log("categorias:"+$scope.categoriasSelected[i].nombre);
-      var categoria={};
-      categoria.id=i;
-      categoria.nombre=$scope.categoriasSelected[i].nombre;
-      categoria.descripcion=$scope.categoriasSelected[i].descripcion;
-      $scope.consulta.categoria=categoria;
-    }*/
     var resp="";
     var men="";
     men=$scope.consulta.producto.nombre;
@@ -1241,7 +1274,7 @@ angular.module('app.controllers', [])
     }).finally(function(data){
       console.log("size"+$scope.proveedores.length);
       for(var i=0; i<$scope.proveedores.length; i++){
-        console.log("proveedor: "+$scope.proveedores[i].usuario.user);
+        console.log("proveedor: "+$scope.userActual);
         
         var usuario = {
           mensaje:"Sin mensaje",
@@ -1251,8 +1284,9 @@ angular.module('app.controllers', [])
           id: 0         
         };
 
-        $scope.addLocation($scope.proveedores[i].usuario.latitud, $scope.proveedores[i].usuario.longitud, usuario)
+        
         if($scope.userActual != $scope.proveedores[i].usuario.user){
+          $scope.addLocation($scope.proveedores[i].usuario.latitud, $scope.proveedores[i].usuario.longitud, usuario);
           if($scope.proveedores.length==(i+1)){
             console.log("fin de ciclo");
               resp=resp+$scope.proveedores[i].usuario.user;
