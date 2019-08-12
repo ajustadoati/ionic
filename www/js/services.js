@@ -21,9 +21,9 @@ angular.module('app.services', [])
         return $http.post(url+"login/", usuarioLogin);
     };
 
-    usuarioService.getUserByUserAndEmail = function (usuarioEmail) {
-        console.log("Service: getting User");
-        return $http.get(url+usuarioEmail.user+"/email/"+usuarioEmail.email);
+    usuarioService.getUserByUserAndEmail = function (user, email) {
+        console.log("Service: getting User"+user);
+        return $http.get(url+user+"/email/"+email);
     };
 
     usuarioService.getUserByUser = function (user) {
@@ -37,6 +37,11 @@ angular.module('app.services', [])
 
     usuarioService.addContactToUser = function (contact, user) {
         return $http.get(url+user+"/contacto/"+contact);
+    };
+
+     usuarioService.setPasswordForUser = function (usuario) {
+            console.log("Service: Guardando Usuario");
+        return $http.put(url+"password/", usuario);
     };
     
     return usuarioService;
@@ -550,7 +555,7 @@ $ionicPopup for making Responsive Popups
     //--------------------------------------***END HELPER FUNCTIONS***----------------------------------------------------------
     //Login Function
     SharedConnObj.login=function (jid,host,pass) { 
-        console.log("jid"+pass);
+        console.log("jid");
         //console.log("pass"+pass);  
         //Strophe syntax
         // We are creating Strophe connection Object

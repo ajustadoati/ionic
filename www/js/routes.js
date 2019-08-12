@@ -22,6 +22,15 @@ angular.module('app.routes', [])
       controller: 'usuarioEmailCtrl'
     })
 
+    .state('recuperar', {
+      url: '/recuperar',
+      params:{
+            user:null
+      },
+      templateUrl: 'templates/recuperar.html',
+      controller: 'recuperarCtrl'
+    })
+
     .state('registro', {
       url: '/homeRegister',
       templateUrl: 'templates/registro.html',

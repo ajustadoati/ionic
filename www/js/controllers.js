@@ -52,40 +52,74 @@ angular.module('app.controllers', [])
 
 .controller('usuarioEmailCtrl', function($scope, usuarioService, $state, $ionicPopup) {
   console.log("UsuarioEmail Ctrl");
-  $scope.usuarioLogin={};
+  $scope.usuarioEmail={};
+ 
 
-  $scope.findUserEmail = function (usuarioEmailForm) {
-     console.debug("search user");
-     var user = $scope.usuarioEmail.user.toLowerCase();
-     var email = $scope.usuarioEmail.email.toLowerCase();
+  $scope.findUserEmail = function () {
+   console.info("search user"+$scope.usuarioEmail.mail);
+   var user = $scope.usuarioEmail.user.toLowerCase();
+   var mail = $scope.usuarioEmail.mail.toLowerCase();     
+    console.debug("search user");    
+    usuarioService.getUserByUserAndEmail(user,mail)
+      .success(function (data) {
+
+          console.log('Saved User '+data.user);
+          
+          
+          if(!(data.status != null && data.status != undefined)){
+           console.log('User exist '+data.user);
+             //Calling the login function in sharedConn  
+          
+            console.log("user:"+user);
+            $state.go('recuperar', {user});
+            
+          }else{
+            var alertPopup = $ionicPopup.alert({
+              title: 'Usuario o correo incorrecto',
+              template: 'Por favor intenta de nuevo!'
+            });
+          }
+      }).
+      error(function(error) {
+          $scope.status = 'Unable to get user: ' + error.message;
+      });
+  }
+ 
+
+
+})
+
+.controller('recuperarCtrl', function($scope, usuarioService, $state, $ionicPopup, $stateParams) {
+  console.log("recuperarCtrl");
+  $scope.usuario={};
+  //$scope.usuario = ;
+  console.log("usuario: "+$stateParams.user);
+
+  $scope.recuperarUsuario = function () {
+     
+     var password = $scope.usuario.password.toLowerCase();
+     var password2 = $scope.usuario.password2.toLowerCase();
 
          //uuu
-          
-           
-      usuarioService.getUserByUserAndLogin($scope.usuarioEmail)
-        .success(function (data) {
-
-            console.log('Saved User '+data.status);
-            $scope.usuarioLogin={};
-            if(!(data.status != null && data.status != undefined)){
-             console.log('User exist '+data.user);
-               //Calling the login function in sharedConn  
-            
-              //$state.go("tabsController.solicitudes");
-              
-            }else{
-              var alertPopup = $ionicPopup.alert({
-                title: 'Usuario o password incorrectos',
-                template: 'Por favor intenta de nuevo!'
+      
+      if (password == password2){
+        $scope.usuario.user = $stateParams.user;
+        $scope.usuario.password = password;
+        usuarioService.setPasswordForUser($scope.usuario)
+              .success(function () {
+                  console.log('Saved User.');
+                  $state.go("login");
+              }).
+              error(function(error) {
+                  $scope.status = 'Unable to change password: ' + error.message;
               });
-            }
-            
-            
-
-        }).
-        error(function(error) {
-            $scope.status = 'Unable to get user: ' + error.message;
+      
+      }else {
+        var alertPopup = $ionicPopup.alert({
+          title: 'Password no coincide !',
+          template: 'Por favor intenta de nuevo!'
         });
+      }
   }
  
 
