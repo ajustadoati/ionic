@@ -3131,7 +3131,7 @@ ion-infinite-scroll {
 
 .has-tabs,
 .bar-footer.has-tabs {
-  bottom: 65px; }
+  bottom: 0px; }
 
 .has-footer.has-tabs {
   bottom: 93px; }

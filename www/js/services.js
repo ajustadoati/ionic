@@ -302,7 +302,7 @@ console.log("Service: Getting gategorias")
             
             for (var i = 0; i < data.length; i++) {
                 var us = data[i].usuario.user;
-                if(us == "anonimo"){
+                if((us == "anonimo" )|| (us.search("nonimo") != -1)){
                     console.debug("recibiendo usuario: "+us)
                     us = "Admin"
                 }

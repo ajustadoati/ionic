@@ -4,6 +4,7 @@
   "description": "ajustadoatiMovilApp: An Ionic project",
   "dependencies": {
     "cordova-android": "^8.0.0",
+    "cordova-ios": "5.0.1",
     "cordova-plugin-device": "^2.0.1",
     "cordova-plugin-geolocation": "~2.1.0",
     "cordova-plugin-whitelist": "git+https://github.com/apache/cordova-plugin-whitelist.git",
@@ -13,7 +14,7 @@
     "gulp-rename": "^1.2.0",
     "gulp-sass": "^2.0.4",
     "ionic-plugin-keyboard": "^2.2.1",
-    "onesignal-cordova-plugin": "^2.2.5"
+    "onesignal-cordova-plugin": "2.5.2"
   },
   "devDependencies": {
     "@ionic/v1-toolkit": "1.0.22",
@@ -32,11 +33,11 @@
   ],
   "cordova": {
     "platforms": [
-      "android"
+      "android",
+      "ios"
     ],
     "plugins": {
       "cordova-plugin-geolocation": {},
-      "onesignal-cordova-plugin": {},
       "cordova-plugin-device": {},
       "cordova-plugin-whitelist": {},
       "cordova-plugin-statusbar": {},
@@ -44,7 +45,8 @@
       "cordova-plugin-ionic-webview": {
         "ANDROID_SUPPORT_ANNOTATIONS_VERSION": "27.+"
       },
-      "cordova-plugin-ionic-keyboard": {}
+      "cordova-plugin-ionic-keyboard": {},
+      "onesignal-cordova-plugin": {}
     }
   }
 }

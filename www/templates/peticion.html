@@ -1,19 +1,42 @@
-<ion-view title="Solicitudes">
-    <ion-content overflow-scroll="true" padding="true" class="has-header">
-      
-      <ion-list style="">
-     <ion-item class="item-remove-animate item-avatar item-icon-right" ng-repeat="peticion in peticiones" type="item-text-wrap" ng-click="peticionDetalle(peticion.code)">
-      
-      <img ng-src="img/ben.png">
-      <h2>{{peticion.user}}</h2>
-      <p>{{peticion.code}}: {{peticion.text}}</p>
-      <i class="icon ion-chevron-right icon-accessory"></i>
 
-      <ion-option-button class="button-assertive" ng-click="removePeticion(peticion)">
-        Delete
-      </ion-option-button>
+<ion-view title="Solicitudes">
+ 
+  <ion-content overflow-scroll="true" padding="true" >
+      
+    <ion-list class="dark">
+      <ion-item class="item-remove-animate item-avatar item-icon-right" ng-repeat="peticion in peticiones" type="item-text-wrap" ng-click="peticionDetalle(peticion.code)" >
+        <div class="request">
+          
+           <div class = "rowRequest">
+
+                    <div class = "columnRequestImg" ><img src="img/fondo_img.png" width="70px" height="70px"></img></div>
+                    <div class = "columnRequest" style="padding-top: 10px;">
+                      <div><h2>{{peticion.user}}</h2></div>
+                      <div class = "row">
+                        <div class = "col-20" ><h3>ID:</h3></div>
+                        <div class = "col-50" ><h3 class="id">{{peticion.code}}</h3></div>
+                      </div>
+                      <div><p>{{peticion.text}}</p></div>
+                      
+                    </div>
+                    <div class = "columnRequest" >
+                      <ion-option-button class="button-assertive" ng-click="removePeticion(peticion)">
+                        Delete
+                      </ion-option-button>
+                      <i class="icon ion-chevron-right icon-accessory"></i>
+                    </div>
+
+                  
+
+                </div>
+          
+
+          
+      
+        </div>
+        
       
       </ion-item>
     </ion-list>
-    </ion-content>
+  </ion-content>
 </ion-view>

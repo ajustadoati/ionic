@@ -56,14 +56,16 @@ angular.module('app.controllers', [])
  
 
   $scope.findUserEmail = function () {
-   console.info("search user"+$scope.usuarioEmail.mail);
+   
    var user = $scope.usuarioEmail.user.toLowerCase();
-   var mail = $scope.usuarioEmail.mail.toLowerCase();     
+   var mail = $scope.usuarioEmail.mail.toLowerCase();   
+   console.info("search user"+user);
+   console.info("search email"+mail);  
     console.debug("search user");    
     usuarioService.getUserByUserAndEmail(user,mail)
       .success(function (data) {
 
-          console.log('Saved User '+data.user);
+          console.log('Saved User !');
           
           
           if(!(data.status != null && data.status != undefined)){
@@ -108,6 +110,10 @@ angular.module('app.controllers', [])
         usuarioService.setPasswordForUser($scope.usuario)
               .success(function () {
                   console.log('Saved User.');
+                  var alertPopup = $ionicPopup.alert({
+                    title: 'Password creado satisfactoriamente !',
+                    template: 'Gracias.'
+                  });
                   $state.go("login");
               }).
               error(function(error) {
