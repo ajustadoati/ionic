@@ -287,10 +287,10 @@
 
 .dark .request {
     background: url(../img/fondo_lista.png);
-    background-size: 100% 120px;
-    height: 120px;
+    background-size: 100% 110px;
+    height: 110px;
     padding-left: 15px;
-    padding-top: 25px;
+    padding-top: 20px;
 }
 
 .dark .row {
@@ -322,6 +322,48 @@
     display: table-cell;
     background-color: red; /*Optional*/
     
+}
+
+.div-table {
+  display: table;         
+  width: auto;         
+  background-color: #eee;         
+  border: 1px solid #666666;         
+  border-spacing: 5px; /* cellspacing:poor IE support for  this */
+}
+.div-table-row {
+  display: table-row;
+  width: auto;
+  clear: both;
+}
+
+.div-table-col {
+  float: left; /* fix for  buggy browsers */
+  display: table-column;         
+  width: 200px;         
+  background-color: #ffffff;  
+  padding-top: 9px;
+  padding-left: 20px;
+}
+
+.div-table-col-id {
+  float: left; /* fix for  buggy browsers */
+  display: table-column;         
+  width: 30px;         
+  background-color: #ffffff;  
+}
+.div-table-col-id-2 {
+  float: left; /* fix for  buggy browsers */
+  display: table-column;         
+  width: 100px;         
+  background-color: #ffffff;  
+}
+
+.div-table-col-img {
+  float: left; /* fix for  buggy browsers */
+  display: table-column;         
+  width: 20%;         
+  background-color: #ffffff;  
 }
 
 
