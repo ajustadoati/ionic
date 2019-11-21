@@ -3846,7 +3846,7 @@ a.subdued {
   border-bottom-width: 0;
   background-position: top; }
   .bar-footer.item-input-inset {
-    position: absolute; }
+    position: inherit; }
 
 .bar-tabs {
   padding: 0; }
