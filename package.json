@@ -24,7 +24,7 @@
     "cordova-plugin-splashscreen": "^5.0.2",
     "cordova-plugin-statusbar": "^2.4.2",
     "gulp-util": "^2.2.14",
-    "shelljs": "^0.3.0"
+    "shelljs": "^0.8.5"
   },
   "cordovaPlugins": [],
   "cordovaPlatforms": [
